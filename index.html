@@ -15,7 +15,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230a0e14'/%3E%3Ccircle cx='28' cy='62' r='11' fill='none' stroke='%23ffb454' stroke-width='6'/%3E%3Crect x='44' y='30' width='13' height='13' fill='%23ffb454'/%3E%3Ccircle cx='74' cy='62' r='11' fill='none' stroke='%23ffb454' stroke-width='6'/%3E%3Cpath d='M37 56 L46 43 M56 43 L65 56' stroke='%23ffb454' stroke-width='5'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0a0e14;
@@ -110,8 +110,12 @@
   }
   .kicker .p { color: var(--teal); }
   .hero h1 {
-    font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 800;
+    font-family: "Space Grotesk", var(--sans);
+    font-size: clamp(2.4rem, 6vw, 3.7rem); font-weight: 700;
     letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 18px;
+  }
+  .job h3, .card h3, .feature h3, .edu h3 {
+    font-family: "Space Grotesk", var(--sans); letter-spacing: -0.01em;
   }
   .hero h1 .accent { color: var(--amber); }
   .hero .role { font-size: 1.06rem; color: var(--muted); }
@@ -129,6 +133,12 @@
     font-family: var(--mono); font-size: 11.5px; line-height: 1.9; color: var(--muted);
     pointer-events: none;
   }
+  .hud-btn {
+    pointer-events: auto; font-family: var(--mono); font-size: 11.5px;
+    color: var(--amber); background: none; border: none; padding: 0;
+    cursor: pointer; margin-top: 4px; visibility: hidden;
+  }
+  .hud-btn:hover { text-decoration: underline; text-underline-offset: 3px; }
   .hud .v { color: var(--text); }
   .hud .drift { color: var(--drift); }
   .hud .ok { color: var(--teal); }
@@ -200,14 +210,41 @@
     border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
     background: var(--panel); margin-bottom: 18px;
   }
-  .feature .imgwrap { position: relative; }
-  .feature img { width: 100%; display: block; border-bottom: 1px solid var(--border); }
+  .compare {
+    position: relative; height: 420px; overflow: hidden;
+    border-bottom: 1px solid var(--border); cursor: ew-resize;
+    --x: 50%; touch-action: none;
+  }
+  .compare img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; user-select: none; -webkit-user-drag: none; pointer-events: none;
+  }
+  .compare .im-b { clip-path: inset(0 calc(100% - var(--x)) 0 0); }
+  .compare .divider {
+    position: absolute; top: 0; bottom: 0; left: var(--x); width: 2px;
+    background: var(--amber); transform: translateX(-1px);
+  }
+  .compare .knob {
+    position: absolute; top: 50%; left: 1px; transform: translate(-50%, -50%);
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--amber);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 11px; color: var(--amber);
+  }
+  .cmp-tag {
+    position: absolute; top: 12px; font-family: var(--mono); font-size: 10px;
+    color: var(--text); background: rgba(10, 14, 20, .82);
+    border: 1px solid var(--border); padding: 3px 9px; border-radius: 4px;
+  }
+  .cmp-tag.left { left: 12px; }
+  .cmp-tag.right { right: 12px; color: var(--teal); }
   .feature .img-tag {
     position: absolute; left: 12px; bottom: 12px;
     font-family: var(--mono); font-size: 10px; color: var(--text);
     background: rgba(10, 14, 20, .82); border: 1px solid var(--border);
     padding: 3px 9px; border-radius: 4px;
   }
+  @media (max-width: 700px) { .compare { height: 280px; } }
   .feature .body { padding: 22px; }
   .kf { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-bottom: 8px; }
   .kf .t { color: var(--amber); }
@@ -259,6 +296,13 @@
     border: 1px solid var(--border); border-radius: 10px; background: var(--panel);
     padding: 20px 24px; margin-bottom: 34px; overflow-x: auto;
   }
+  html.js .diag > div { opacity: 0; transition: opacity .12s; }
+  html.js .diag > div.typed { opacity: 1; }
+  html.js .diag > div.typing::after {
+    content: "_"; color: var(--teal); margin-left: 4px;
+    animation: blink 0.9s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
   .diag .prompt { color: var(--faint); }
   .diag .cmd { color: var(--text); }
   .diag .pass { color: var(--teal); }
@@ -299,10 +343,11 @@
 
 <header class="hero" id="top">
   <canvas id="slam" aria-hidden="true"></canvas>
-  <div class="hud" id="hud" aria-hidden="true">
-    <div>trajectory sim <span class="v" id="hud-frame">frame 0000/0600</span></div>
-    <div>VO ATE <span class="drift" id="hud-ate">0.0 m</span></div>
-    <div>loop closure <span class="v" id="hud-lc">pending</span></div>
+  <div class="hud" id="hud">
+    <div aria-hidden="true">trajectory sim <span class="v" id="hud-frame">frame 0000/0600</span></div>
+    <div aria-hidden="true">VO ATE <span class="drift" id="hud-ate">0.0 m</span></div>
+    <div aria-hidden="true">loop closure <span class="v" id="hud-lc">pending</span></div>
+    <button class="hud-btn" id="lc-btn" type="button">[ force loop closure ]</button>
   </div>
   <div class="wrap">
     <div class="hero-inner">
@@ -324,7 +369,7 @@
   <div class="hero-caption">
     <span class="r">what you are watching:</span> visual odometry drifts, a loop closure
     fires, iSAM2 snaps the whole trajectory back. on real KITTI seq 00 my pipeline takes
-    ATE from 29.14 m to 7.76 m this way.
+    ATE from 29.14 m to 7.76 m this way. click the map to close the loop yourself.
   </div>
 </header>
 
@@ -374,9 +419,13 @@
     <div class="sec-head reveal"><span class="node">x2</span><h2>projects</h2></div>
 
     <div class="feature reveal">
-      <div class="imgwrap">
-        <img src="https://raw.githubusercontent.com/jashshah999/gtsam-splatfactors/main/assets/tum_desk_gt_vs_render.png" alt="TUM fr1/desk: camera frame next to the same view rendered from the trained Gaussian map">
-        <span class="img-tag">left: camera | right: my gaussian map, 26 dB, 4 GB laptop GPU</span>
+      <div class="compare" id="compare" role="img" aria-label="Drag to compare the real camera frame with the same view rendered from the trained Gaussian map">
+        <img class="im-a" src="assets/tum_render.png" alt="">
+        <img class="im-b" src="assets/tum_gt.png" alt="">
+        <div class="divider" aria-hidden="true"><span class="knob">&lt;&gt;</span></div>
+        <span class="cmp-tag left">camera</span>
+        <span class="cmp-tag right">my render, 26 dB</span>
+        <span class="img-tag">drag to compare | trained on a 4 GB laptop GPU</span>
       </div>
       <div class="body">
         <div class="kf">kf 01 <span class="t">| featured on the GTSAM blog</span></div>
@@ -500,10 +549,11 @@
     pt: "rgba(160, 178, 205, 0.35)"
   };
   var N = 600, gt = [], drift = [], resid = [], pts = [];
-  var frame = 0, phase = "drive", phaseT = 0, dpr = 1, W = 0, H = 0;
+  var frame = 0, endFrame = N - 1, phase = "drive", phaseT = 0, dpr = 1, W = 0, H = 0;
   var hudFrame = document.getElementById("hud-frame");
   var hudAte = document.getElementById("hud-ate");
   var hudLc = document.getElementById("hud-lc");
+  var lcBtn = document.getElementById("lc-btn");
 
   var lastW = 0, lastH = 0;
   function resize() {
@@ -554,9 +604,19 @@
       ]);
       resid.push([(Math.random() - 0.5) * 4, (Math.random() - 0.5) * 4]);
     }
-    frame = 0; phase = "drive"; phaseT = 0;
+    frame = 0; endFrame = N - 1; phase = "drive"; phaseT = 0;
     if (hudLc) { hudLc.textContent = "pending"; hudLc.className = "v"; }
   }
+
+  /* visitor-triggered loop closure: close the loop from wherever the vehicle is */
+  function forceLC() {
+    if (phase === "drive" && frame > 60) {
+      endFrame = frame;
+      phase = "closure"; phaseT = 0;
+    }
+  }
+  if (lcBtn) lcBtn.addEventListener("click", forceLC);
+  canvas.addEventListener("click", forceLC);
 
   function ate(upTo, corrected) {
     var s = 0, n = Math.max(upTo, 1);
@@ -578,9 +638,9 @@
     ctx.stroke(); ctx.globalAlpha = 1;
   }
 
-  function lerpPath(t) {
+  function lerpPath(t, upTo) {
     var out = [];
-    for (var i = 0; i < N; i++) {
+    for (var i = 0; i <= upTo; i++) {
       var tx = gt[i][0] + resid[i][0], ty = gt[i][1] + resid[i][1];
       out.push([drift[i][0] + (tx - drift[i][0]) * t, drift[i][1] + (ty - drift[i][1]) * t]);
     }
@@ -636,37 +696,38 @@
       drawVehicle(drift[frame][0], drift[frame][1], h, C.drift);
       if (hudFrame) hudFrame.textContent = "frame " + fmt(frame, 4) + "/0600";
       if (hudAte) hudAte.textContent = ate(frame, false).toFixed(1) + " m";
-      if (frame >= N - 1) { phase = "closure"; phaseT = 0; }
+      if (frame >= N - 1) { endFrame = N - 1; phase = "closure"; phaseT = 0; }
     } else if (phase === "closure") {
       phaseT++;
-      drawPath(drift, N - 1, C.drift, 1.8, 0.95);
+      drawPath(drift, endFrame, C.drift, 1.8, 0.95);
       /* loop closure edge: current pose back to anchor */
       var blink = phaseT % 20 < 12;
       if (blink) {
         ctx.strokeStyle = C.amber; ctx.lineWidth = 1.6; ctx.globalAlpha = 0.9;
         ctx.beginPath();
-        ctx.moveTo(drift[N - 1][0], drift[N - 1][1]);
-        var mx = (drift[N - 1][0] + gt[0][0]) / 2 + 30;
-        var my = (drift[N - 1][1] + gt[0][1]) / 2 - 46;
+        ctx.moveTo(drift[endFrame][0], drift[endFrame][1]);
+        var mx = (drift[endFrame][0] + gt[0][0]) / 2 + 30;
+        var my = (drift[endFrame][1] + gt[0][1]) / 2 - 46;
         ctx.quadraticCurveTo(mx, my, gt[0][0], gt[0][1]);
         ctx.stroke(); ctx.globalAlpha = 1;
         ctx.fillStyle = C.amber;
         ctx.beginPath(); ctx.arc(gt[0][0], gt[0][1], 4, 0, 7); ctx.fill();
       }
-      if (hudLc) { hudLc.textContent = "detected: x0599 -> x0000"; hudLc.className = "v"; }
+      if (hudLc) { hudLc.textContent = "detected: x" + fmt(endFrame, 4) + " -> x0000"; hudLc.className = "v"; }
       if (phaseT > 70) { phase = "correct"; phaseT = 0; }
     } else if (phase === "correct") {
       phaseT++;
       var t = ease(Math.min(phaseT / 80, 1));
-      var p = lerpPath(t);
+      var p = lerpPath(t, endFrame);
       var col = t > 0.6 ? C.teal : C.drift;
-      drawPath(p, N - 1, col, 1.8, 0.95);
-      drawVehicle(p[N - 1][0], p[N - 1][1], heading(p, N - 1), col);
-      if (hudAte) hudAte.textContent = (ate(N, false) * (1 - t) + ate(N, true) * t).toFixed(1) + " m";
+      drawPath(p, endFrame, col, 1.8, 0.95);
+      drawVehicle(p[endFrame][0], p[endFrame][1], heading(p, endFrame), col);
+      if (hudAte) hudAte.textContent = (ate(endFrame + 1, false) * (1 - t) + ate(endFrame + 1, true) * t).toFixed(1) + " m";
       if (hudLc && t >= 1) { hudLc.textContent = "optimized (iSAM2)"; hudLc.className = "ok"; }
       if (hudAte) hudAte.className = t > 0.6 ? "ok" : "drift";
       if (phaseT > 190) { if (hudAte) hudAte.className = "drift"; reseed(); }
     }
+    if (lcBtn) lcBtn.style.visibility = (phase === "drive" && frame > 60) ? "visible" : "hidden";
     requestAnimationFrame(tick);
   }
 
@@ -678,7 +739,7 @@
       pts.push([g[0] + (Math.random() - 0.5) * 56, g[1] + (Math.random() - 0.5) * 56]);
     }
     drawPoints();
-    drawPath(lerpPath(1), N - 1, C.teal, 1.8, 0.95);
+    drawPath(lerpPath(1, N - 1), N - 1, C.teal, 1.8, 0.95);
     if (hudFrame) hudFrame.textContent = "frame 0600/0600";
     if (hudAte) { hudAte.textContent = ate(N, true).toFixed(1) + " m"; hudAte.className = "ok"; }
     if (hudLc) { hudLc.textContent = "optimized (iSAM2)"; hudLc.className = "ok"; }
@@ -764,6 +825,46 @@
     });
   }, { threshold: 0.12 });
   document.querySelectorAll(".reveal").forEach(function (e) { revObs.observe(e); });
+
+  /* ============ compare slider ============ */
+  var cmp = document.getElementById("compare");
+  if (cmp) {
+    var dragging = false;
+    function setX(clientX) {
+      var r = cmp.getBoundingClientRect();
+      var pct = Math.max(4, Math.min(96, (clientX - r.left) / r.width * 100));
+      cmp.style.setProperty("--x", pct + "%");
+    }
+    cmp.addEventListener("pointerdown", function (e) {
+      dragging = true; cmp.setPointerCapture(e.pointerId); setX(e.clientX);
+    });
+    cmp.addEventListener("pointermove", function (e) { if (dragging) setX(e.clientX); });
+    cmp.addEventListener("pointerup", function () { dragging = false; });
+    cmp.addEventListener("pointercancel", function () { dragging = false; });
+  }
+
+  /* ============ footer diagnostic typewriter ============ */
+  var diag = document.querySelector(".diag");
+  if (diag) {
+    var lines = Array.prototype.slice.call(diag.children);
+    var typedOnce = false;
+    var diagObs = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting || typedOnce) return;
+      typedOnce = true; diagObs.disconnect();
+      if (reduced) {
+        lines.forEach(function (l) { l.classList.add("typed"); });
+        return;
+      }
+      lines.forEach(function (l, i) {
+        setTimeout(function () {
+          l.classList.add("typed");
+          lines.forEach(function (o) { o.classList.remove("typing"); });
+          if (i < lines.length - 1) l.classList.add("typing");
+        }, 420 * i + 200);
+      });
+    }, { threshold: 0.4 });
+    diagObs.observe(diag);
+  }
 
   /* ============ loop closure toast ============ */
   var toast = document.getElementById("toast");
