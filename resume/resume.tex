@@ -1,0 +1,322 @@
+\documentclass[10pt, a4paper]{article}
+
+% Packages:
+\usepackage[
+    ignoreheadfoot, % set margins without considering header and footer
+    top=0.5 cm, % seperation between body and page edge from the top
+    bottom=0.5 cm, % seperation between body and page edge from the bottom
+    left=1 cm, % seperation between body and page edge from the left
+    right=1 cm, % seperation between body and page edge from the right
+    footskip=1.0 cm % seperation between body and footer
+    % showframe % for debugging
+]{geometry} % for adjusting page geometry
+\usepackage{titlesec} % for customizing section titles
+\usepackage{tabularx} % for making tables with fixed width columns
+\usepackage{array} % tabularx requires this
+\usepackage[dvipsnames]{xcolor} % for coloring text
+\definecolor{primaryColor}{RGB}{0, 0, 0} % define primary color
+\definecolor{Blue}{RGB}{0, 0, 139} % using darker blue for better readability
+\usepackage{enumitem} % for customizing lists
+\usepackage{fontawesome5} % for using icons
+\usepackage{amsmath} % for math
+\usepackage[
+    pdftitle={Jash Shah's CV},
+    pdfauthor={Jash Shah},
+    pdfcreator={LaTeX},
+    colorlinks=true,
+    urlcolor=primaryColor
+]{hyperref} % for links, metadata and bookmarks
+\usepackage[pscoord]{eso-pic} % for floating text on the page
+\usepackage{calc} % for calculating lengths
+\usepackage{bookmark} % for bookmarks
+\usepackage{lastpage} % for getting the total number of pages
+\usepackage{changepage} % for one column entries (adjustwidth environment)
+\usepackage{paracol} % for two and three column entries
+\usepackage{ifthen} % for conditional statements
+\usepackage{needspace} % for avoiding page brake right after the section title
+\usepackage{iftex} % check if engine is pdflatex, xetex or luatex
+
+% Ensure that generate pdf is machine readable/ATS parsable:
+\ifPDFTeX
+    \input{glyphtounicode}
+    \pdfgentounicode=1
+    \usepackage[T1]{fontenc}
+    \usepackage[utf8]{inputenc}
+    \usepackage{lmodern}
+\fi
+
+\usepackage{charter}
+
+\DeclareUnicodeCharacter{2197}{\ensuremath{\nearrow}}
+
+\newcommand{\externallink}[2]{\href{#1}{#2\,{\footnotesize\textcolor{gray}{\faLink}}}}
+\newcommand{\customsection}[1]{%
+    \section*{%
+        \textbf{%
+            \fontsize{11pt}{11pt}\selectfont
+            \color{Blue}#1%
+        }%
+        \hspace{0.5em}\color{Blue}\hrulefill%
+    }%
+    \vspace{0.03cm}%
+}
+
+\raggedright
+\AtBeginEnvironment{adjustwidth}{\partopsep0pt}
+\pagestyle{empty}
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\topskip}{0pt}
+\setlength{\columnsep}{0.0cm}
+\pagenumbering{gobble}
+
+\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large\color{Blue}}{}{0pt}{}
+
+\titlespacing{\section}{-1pt}{0.1cm}{0.05cm}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\small$\bullet$}}$}
+\newenvironment{highlights}{
+    \begingroup
+    \fontsize{9.3pt}{10.8pt}\selectfont
+    \begin{itemize}[
+        topsep=0.03cm,
+        parsep=0.03cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=0cm + 8pt
+    ]
+}{
+    \end{itemize}
+    \endgroup
+}
+
+\newenvironment{highlightsforbulletentries}{
+    \begin{itemize}[
+        topsep=0.10 cm,
+        parsep=0.10 cm,
+        partopsep=0pt,
+        itemsep=0pt,
+        leftmargin=10pt
+    ]
+}{
+    \end{itemize}
+}
+
+\newenvironment{onecolentry}{
+    \begin{adjustwidth}{0 cm + 0.00001 cm}{0 cm + 0.00001 cm}
+}{
+    \end{adjustwidth}
+}
+
+\newenvironment{twocolentry}[2][]{
+    \onecolentry
+    \def\secondColumn{#2}
+    \setcolumnwidth{\fill, 6.0 cm}
+    \begin{paracol}{2}
+}{
+    \switchcolumn \raggedleft \secondColumn
+    \end{paracol}
+    \endonecolentry
+}
+
+\newenvironment{threecolentry}[3][]{
+    \onecolentry
+    \def\thirdColumn{#3}
+    \setcolumnwidth{, \fill, 4.5 cm}
+    \begin{paracol}{3}
+    {\raggedright #2} \switchcolumn
+}{
+    \switchcolumn \raggedleft \thirdColumn
+    \end{paracol}
+    \endonecolentry
+}
+
+\newenvironment{header}{
+    \setlength{\topsep}{0pt}\par\kern\topsep\centering\linespread{0.8}
+}{
+    \par\kern\topsep
+}
+
+\let\hrefWithoutArrow\href
+
+\begin{document}
+    \begin{header}
+        \fontsize{15pt}{15pt}\selectfont \textcolor{Blue}{Jash Shah}
+
+        \vspace{5pt}
+
+        \normalsize
+
+        San Francisco, CA
+        \textbullet{} \href{mailto:jashshah.999@gmail.com}{jashshah.999@gmail.com}
+        \textbullet{} \href{tel:+14129548384}{+1 (412) 954-8384}
+        \textbullet{} \href{https://jashshah999.github.io}{Website}
+        \textbullet{} \href{https://linkedin.com/in/jash-shah-2b790146}{LinkedIn}
+        \textbullet{} \href{https://github.com/jashshah999}{Github}
+    \end{header}
+
+    \vspace{3pt}
+
+\customsection{Education}
+
+\begin{twocolentry}{
+    {\small\textcolor{gray}{\textit{08/2022 – 06/2024 • Pittsburgh, PA}}}
+}
+    \textbf{Carnegie Mellon University} \newline
+    {\small Master of Science in Robotic Systems Development • GPA: 3.92/4.0}
+\end{twocolentry}
+\vspace{0.08cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item \textbf{Key Courses:} Learning for 3D Vision, Computer Vision, Visual Learning and Recognition, Robot Autonomy, AI Venture Studio
+    \end{highlights}
+\end{onecolentry}
+\vspace{0.15cm}
+
+\begin{twocolentry}{
+    {\small\textcolor{gray}{\textit{06/2017 – 05/2021 • Manipal, India}}}
+}
+    \textbf{Manipal Institute of Technology} \newline
+    {\small B.Tech Mechatronics (Minor in Robotics) • GPA: 8.78/10}
+\end{twocolentry}
+
+
+\customsection{Experience}
+
+\begin{twocolentry}{
+    {\small\textcolor{gray}{\textit{05/2023 – Present • Santa Clara, CA}}}
+}
+    \textbf{Robotics Researcher} \externallink{https://www.nissan-global.com/EN/INNOVATION/TECHNOLOGY/ADVANCED_TECH_CENTER/}{}\newline
+    {\small Nissan Advanced Technology Center } {\small\textcolor{gray}{\textit{(Internship: May-Aug 2023, Full-time from Aug 2024)}}}
+\end{twocolentry}
+\vspace{0.1cm}
+
+\begin{onecolentry}
+    \begin{highlights}
+        \item Engineered graph-based transformer pipeline for multi-object tracking, achieving 0.71 AMOTA with real-time inference on vehicle
+        \item Developed Sparse4Dv3 LiDAR-Camera fusion tracker on nuScenes; hit 0.650 AMOTA, +0.17 over camera-only baseline
+        \item Optimized 2b-param ViT for simulation; reached 9.2\% MFU, 29x speedup by resolving silent upcasting and bottlenecks via profiling
+        \item Built remote driving system's online pose estimation module using C++ and ROS achieving 50cm lateral and 0.5 deg yaw accuracy
+        \item Pioneered first end-to-end LiDAR+Camera tracker (raw sensors to tracks, no separate detector); competitive with two-stage SOTA
+        \item Engineered RANSAC-based ground plane detection with CUDA acceleration, achieving 10Hz real-time processing of point cloud
+        \item Fused LiDAR data with on-board odometry using lag compensated EKF, resulting in $\sim$43\% improvement in vehicle pose estimate
+        \item Designed Hungarian track-matching architecture to identify ego vehicle from LiDAR tracked objects with 96\% accuracy in real-time
+    \end{highlights}
+\end{onecolentry}
+\vspace{0.15cm}
+
+\begin{twocolentry}{
+    {\small\textcolor{gray}{\textit{08/2023 - 08/2024 • Pittsburgh, PA}}}
+}
+    \textbf{Machine Learning Satellite Researcher}\externallink{https://www.cs.cmu.edu/news/2024/satellite-demo}{} \newline
+    {\small Robotics Exploration Lab, CMU }
+\end{twocolentry}
+\vspace{0.08cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Led a team of 5 to design a 2-stage ML approach for region classification and landmark detection to run on low-power edge devices
+        \item Implemented an SPP classifier in PyTorch for vision-based region classification to run on NVIDIA Jetson Nano, achieving 94\% mAP
+        \item Augmented Landsat-8/9 data with conditional GANs (cGANs), simulating cloud cover and diurnal variations for dataset diversity
+        \item Fine-tuned 18 YOLOv8n models as lightweight landmark detectors, reducing localization error to under 50 km at 700 km altitude
+    \end{highlights}
+\end{onecolentry}
+\vspace{0.15cm}
+
+\begin{twocolentry}{
+    {\small\textcolor{gray}{\textit{01/2021 – 05/2021 • Hyderabad, India}}}
+}
+    \textbf{Computer Vision and Deep Learning Intern} \externallink{https://drive.google.com/file/d/1BeRl-U41tK45PNuKKKesls_hkDZGQ9Vr/view?usp=drive_link}{}\newline
+    {\small RapidAI Vision, Defence Research and Development Organisation (DRDO) }
+\end{twocolentry}
+\vspace{0.08cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Architected vision-based precision landing system for a swarm of UAVs using fiducial marker landing pads from a height of 9 meters
+        \item Conducted SIL, HIL tests with PX4, MAVROS and Gazebo, achieving 4\% landing pad width error using embedded marker protocol
+        \item Deployed custom ORBSLAM2 variant to reconstruct site with 90\% accuracy using monocular camera and localized UAV in real-time
+    \end{highlights}
+\end{onecolentry}
+\vspace{0.15cm}
+
+\customsection{Projects}
+\begin{onecolentry}
+    \textbf{Open Source:} Reviewer at \texttt{huggingface/lerobot}; 36 merged PRs across 12 repos: \texttt{gtsam}, \texttt{lerobot}, \texttt{jax}, \texttt{pytorch/rl}, \texttt{rerun}, \texttt{transformers}, \texttt{accelerate}
+\end{onecolentry}
+\vspace{0.15cm}
+
+\begin{twocolentry}{
+    {\small\textcolor{gray}{\textit{06/2026 – 08/2026}}}
+}
+    \textbf{gtsam-splatfactors: Gaussian Splatting meets Factor Graph SLAM} \externallink{https://gtsam.org/2026/08/04/gaussian-splatting-slam.html}{}\newline
+    {\small Featured on the official GTSAM blog }
+\end{twocolentry}
+\vspace{0.08cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Expressed gsplat rendering as GTSAM factors (photometric residuals with se(3) Jacobians inside iSAM2), adding loop closure, IMU fusion, and pose covariance that gradient-descent 3DGS-SLAM pipelines lack; up to 85\% ATE reduction on KITTI
+    \end{highlights}
+\end{onecolentry}
+\vspace{0.15cm}
+
+\begin{twocolentry}{
+    {\small\textcolor{gray}{\textit{05/2026 – Present}}}
+}
+    \textbf{lerobot-doctor: Dataset Quality Diagnostics for LeRobot} \externallink{https://github.com/jashshah999/lerobot-doctor}{}\newline
+    {\small Live in official HuggingFace LeRobot tooling }
+\end{twocolentry}
+\vspace{0.08cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Built a 12-check dataset diagnostic tool (timestamps, actions, video integrity, real URDF joint limits); shipped on PyPI and integrated as the Doctor tab of HuggingFace's official LeRobot Dataset Visualizer
+    \end{highlights}
+\end{onecolentry}
+\vspace{0.15cm}
+
+\begin{twocolentry}{
+    {\small\textcolor{gray}{\textit{04/2026}}}
+}
+    \textbf{Zero-Shot Semantic Mapping for Mobile Manipulation} \externallink{https://www.linkedin.com/feed/update/urn:li:activity:7449987866274988033/}{}\newline
+    {\small RoboHacks @ Y Combinator }
+\end{twocolentry}
+\vspace{0.08cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Built spatial memory layer fusing Gemma VLM embeddings with SLAM pose graph for zero-shot object retrieval in novel scenes
+        \item Trained ACT policy on Innate OS for 6-DoF pick-and-place; integrated semantic map for language-conditioned task dispatch
+        \item Won Innate Grand Prize + Best Use of Data (YC, 120 builders); shipped full stack on MARS robot in under 2 days
+    \end{highlights}
+\end{onecolentry}
+\vspace{0.15cm}
+
+\begin{twocolentry}{
+    {\small\textcolor{gray}{\textit{08/2022 – 08/2024 • Pittsburgh, PA}}}
+}
+    \textbf{Automated Remote Driving using External Perception Sensors} \externallink{https://mrsdprojects.ri.cmu.edu/2023teame/}{}\newline
+    {\small Nissan North America (Capstone Project) }
+\end{twocolentry}
+\vspace{0.08cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item Explored a novel I2V stack to estimate yaw and lateral deviation from BEV, enabling 75\% lane-keeping accuracy at 22.5 cm/s
+        \item Built bundle adjustment pipeline to refine multi-camera calibration using geometric constraints and fiducial correspondences
+    \end{highlights}
+\end{onecolentry}
+
+
+\customsection{Skills}
+
+\begin{onecolentry}
+    \textbf{Programming Languages:} Python, C++, C, Java, JavaScript, MATLAB, Simulink, Bash
+\end{onecolentry}
+\vspace{0.08cm}
+
+\begin{onecolentry}
+    \textbf{Frameworks and Libraries:} OpenCV, PyTorch, CUDA, ROS, TensorFlow, Point Cloud Library, Ardupilot, PX4 Autopilot
+\end{onecolentry}
+\vspace{0.08cm}
+
+\begin{onecolentry}
+    \textbf{Tools and Platforms:} Docker, Gazebo, AirSim, Git, GitLab, AWS, GCP, Azure, Apache Kafka
+\end{onecolentry}
+
+\end{document}

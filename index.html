@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jash Shah</title>
+<meta name="description" content="Jash Shah. Robotics and ML researcher: SLAM, 3D vision, multi-object tracking, and vision-language-action models.">
+<meta property="og:title" content="Jash Shah">
+<meta property="og:description" content="Robotics and ML researcher: SLAM, 3D vision, multi-object tracking, and vision-language-action models.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230a0e14'/%3E%3Ccircle cx='28' cy='62' r='11' fill='none' stroke='%23ffb454' stroke-width='6'/%3E%3Crect x='44' y='30' width='13' height='13' fill='%23ffb454'/%3E%3Ccircle cx='74' cy='62' r='11' fill='none' stroke='%23ffb454' stroke-width='6'/%3E%3Cpath d='M37 56 L46 43 M56 43 L65 56' stroke='%23ffb454' stroke-width='5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg2: #0e131c;
+    --panel: #0f1521;
+    --border: #1d2736;
+    --grid: rgba(125, 150, 190, 0.045);
+    --text: #d7dee9;
+    --muted: #7d8aa0;
+    --faint: #4a5568;
+    --amber: #ffb454;
+    --drift: #f4747f;
+    --gt: #3a4658;
+    --teal: #59d4b3;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: "Inter", system-ui, -apple-system, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  /* graph-paper texture, like a viz tool */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      repeating-linear-gradient(0deg, var(--grid) 0 1px, transparent 1px 56px),
+      repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px 56px);
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 1; }
+  a { color: var(--amber); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  ::selection { background: rgba(255, 180, 84, 0.25); }
+
+  /* ---------- scroll rail: the factor graph ---------- */
+  .rail {
+    position: fixed; left: 26px; top: 50%; transform: translateY(-50%);
+    z-index: 5; display: none; flex-direction: column; align-items: center; gap: 0;
+  }
+  @media (min-width: 1180px) { .rail { display: flex; } }
+  .rail .pose {
+    display: flex; align-items: center; gap: 10px; padding: 3px 0;
+    text-decoration: none;
+  }
+  .rail .dot {
+    width: 13px; height: 13px; border-radius: 50%;
+    border: 2px solid var(--faint); background: var(--bg); position: relative;
+    transition: border-color .25s, background .25s;
+  }
+  .rail .pose.on .dot { border-color: var(--amber); background: var(--amber); }
+  .rail .pose.on .dot::after {
+    content: ""; position: absolute; inset: -7px; border-radius: 50%;
+    border: 1px solid var(--amber); opacity: .45;
+    animation: cov 2.2s ease-out infinite;
+  }
+  @keyframes cov { 0% { transform: scale(.6); opacity: .6; } 100% { transform: scale(1.5); opacity: 0; } }
+  .rail .lbl {
+    font-family: var(--mono); font-size: 10.5px; color: var(--faint);
+    transition: color .25s; white-space: nowrap;
+  }
+  .rail .pose.on .lbl { color: var(--amber); }
+  .rail .edge {
+    width: 2px; height: 26px; background: var(--border);
+    margin: 0; position: relative; left: -34px; align-self: center;
+  }
+  .rail .edge::after { /* factor node: the small square */
+    content: ""; position: absolute; left: -3px; top: 50%; margin-top: -4px;
+    width: 8px; height: 8px; background: var(--bg); border: 1.5px solid var(--faint);
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative; min-height: 92vh; display: flex; align-items: center;
+    border-bottom: 1px solid var(--border); overflow: hidden;
+  }
+  #slam { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+  .hero .wrap { width: 100%; }
+  .hero-inner { max-width: 460px; position: relative; z-index: 2; }
+  .kicker {
+    font-family: var(--mono); font-size: 12.5px; color: var(--muted);
+    margin-bottom: 18px; letter-spacing: .02em;
+  }
+  .kicker .p { color: var(--teal); }
+  .hero h1 {
+    font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 18px;
+  }
+  .hero h1 .accent { color: var(--amber); }
+  .hero .role { font-size: 1.06rem; color: var(--muted); }
+  .hero .role b { color: var(--text); font-weight: 600; }
+  .links { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .links a {
+    font-family: var(--mono); font-size: 0.82rem; color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px; padding: 8px 15px;
+    background: rgba(10, 14, 20, .72); backdrop-filter: blur(2px);
+    transition: border-color .15s, color .15s;
+  }
+  .links a:hover { border-color: var(--amber); color: var(--amber); text-decoration: none; }
+  .hud {
+    position: absolute; right: 28px; top: 90px; z-index: 2; text-align: right;
+    font-family: var(--mono); font-size: 11.5px; line-height: 1.9; color: var(--muted);
+    pointer-events: none;
+  }
+  .hud .v { color: var(--text); }
+  .hud .drift { color: var(--drift); }
+  .hud .ok { color: var(--teal); }
+  .hero-caption {
+    position: absolute; right: 28px; bottom: 22px; z-index: 2;
+    font-family: var(--mono); font-size: 10.5px; color: var(--faint); text-align: right;
+    max-width: 340px; line-height: 1.7; pointer-events: none;
+  }
+  .hero-caption .r { color: var(--muted); }
+  @media (max-width: 760px) {
+    .hud { top: 24px; right: 20px; font-size: 10px; }
+    .hero-caption { display: none; }
+    #slam { opacity: .5; }
+  }
+
+  /* ---------- shared section chrome ---------- */
+  section { padding: 84px 0 12px; position: relative; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 34px; }
+  .sec-head .node {
+    font-family: var(--mono); font-size: 12px; color: var(--bg);
+    background: var(--amber); border-radius: 999px; padding: 2px 10px; font-weight: 600;
+  }
+  .sec-head h2 {
+    font-family: var(--mono); font-size: 0.85rem; font-weight: 500;
+    text-transform: lowercase; letter-spacing: 0.12em; color: var(--muted);
+  }
+  html.js .reveal { opacity: 0; transform: translateY(16px); transition: opacity .7s ease, transform .7s ease; }
+  html.js .reveal.vis { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .rail .pose.on .dot::after { animation: none; }
+  }
+
+  /* ---------- stats hud strip ---------- */
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+    padding: 34px 0 10px;
+  }
+  .stat {
+    border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px;
+    background: var(--panel); position: relative;
+  }
+  .stat::before {
+    content: attr(data-k); position: absolute; top: -8px; left: 10px;
+    font-family: var(--mono); font-size: 9.5px; color: var(--faint);
+    background: var(--bg); padding: 0 6px; letter-spacing: .08em;
+  }
+  .stat .n { font-family: var(--mono); font-size: 1.5rem; color: var(--amber); font-weight: 600; }
+  .stat .l { font-size: 0.78rem; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+  @media (max-width: 760px) { .stats { grid-template-columns: 1fr 1fr; } }
+
+  /* ---------- work ---------- */
+  .job { display: grid; grid-template-columns: 150px 1fr; gap: 8px 26px; margin-bottom: 40px; }
+  .job .when { font-family: var(--mono); font-size: 0.76rem; color: var(--faint); padding-top: 5px; }
+  .job h3 { font-size: 1.08rem; font-weight: 600; }
+  .job .org { color: var(--muted); font-size: 0.92rem; margin-bottom: 10px; }
+  .job ul { list-style: none; }
+  .job li { font-size: 0.94rem; color: var(--text); padding-left: 20px; position: relative; margin-bottom: 7px; }
+  .job li::before {
+    content: ""; position: absolute; left: 2px; top: .58em;
+    width: 7px; height: 7px; background: transparent; border: 1.5px solid var(--amber);
+    transform: rotate(45deg);
+  }
+  .job li .m { font-family: var(--mono); font-size: 0.85em; color: var(--teal); }
+  @media (max-width: 760px) { .job { grid-template-columns: 1fr; } .job .when { padding-top: 0; } }
+
+  /* ---------- projects ---------- */
+  .feature {
+    border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    background: var(--panel); margin-bottom: 18px;
+  }
+  .feature .imgwrap { position: relative; }
+  .feature img { width: 100%; display: block; border-bottom: 1px solid var(--border); }
+  .feature .img-tag {
+    position: absolute; left: 12px; bottom: 12px;
+    font-family: var(--mono); font-size: 10px; color: var(--text);
+    background: rgba(10, 14, 20, .82); border: 1px solid var(--border);
+    padding: 3px 9px; border-radius: 4px;
+  }
+  .feature .body { padding: 22px; }
+  .kf { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-bottom: 8px; }
+  .kf .t { color: var(--amber); }
+  .feature h3 { font-size: 1.08rem; font-weight: 600; margin-bottom: 8px; }
+  .feature h3 a, .card h3 a { color: var(--text); }
+  .feature h3 a:hover, .card h3 a:hover { color: var(--amber); text-decoration: none; }
+  .feature p { font-size: 0.92rem; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card {
+    border: 1px solid var(--border); border-radius: 10px; padding: 20px;
+    background: var(--panel); display: flex; flex-direction: column; gap: 6px;
+    transition: border-color .2s, transform .2s;
+  }
+  .card:hover { border-color: var(--amber); transform: translateY(-2px); }
+  .card h3 { font-size: 0.98rem; font-weight: 600; }
+  .card p { font-size: 0.87rem; color: var(--muted); flex-grow: 1; }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+
+  /* ---------- oss orbit graph ---------- */
+  .oss-note { font-size: 0.92rem; color: var(--muted); max-width: 620px; margin-bottom: 8px; }
+  #ossgraph { width: 100%; height: auto; display: block; }
+  #ossgraph text { font-family: var(--mono); font-size: 11.5px; fill: var(--muted); }
+  #ossgraph .cnt { fill: var(--amber); }
+  #ossgraph .center-label { fill: var(--text); font-size: 12.5px; }
+  #ossgraph circle.repo-node { fill: var(--panel); stroke: var(--faint); stroke-width: 1.5; transition: stroke .15s; }
+  #ossgraph a:hover circle.repo-node { stroke: var(--amber); }
+  #ossgraph a:hover text { fill: var(--text); }
+  #ossgraph line { stroke: var(--border); }
+  .chips { display: none; flex-wrap: wrap; gap: 8px; }
+  .chips a {
+    font-family: var(--mono); font-size: 0.78rem; color: var(--text);
+    border: 1px solid var(--border); border-radius: 999px; padding: 5px 13px;
+  }
+  .chips a:hover { border-color: var(--amber); color: var(--amber); text-decoration: none; }
+  .chips .n { color: var(--amber); }
+  @media (max-width: 700px) { #ossgraph { display: none; } .chips { display: flex; } }
+
+  /* ---------- education ---------- */
+  .edu { display: grid; grid-template-columns: 150px 1fr; gap: 8px 26px; margin-bottom: 20px; }
+  .edu .when { font-family: var(--mono); font-size: 0.76rem; color: var(--faint); padding-top: 4px; }
+  .edu h3 { font-size: 0.98rem; font-weight: 600; }
+  .edu .d { font-size: 0.88rem; color: var(--muted); }
+  @media (max-width: 760px) { .edu { grid-template-columns: 1fr; } .edu .when { padding-top: 0; } }
+
+  /* ---------- footer / self-diagnostic ---------- */
+  footer { margin-top: 90px; border-top: 1px solid var(--border); padding: 48px 0 80px; }
+  .diag {
+    font-family: var(--mono); font-size: 12.5px; line-height: 2;
+    border: 1px solid var(--border); border-radius: 10px; background: var(--panel);
+    padding: 20px 24px; margin-bottom: 34px; overflow-x: auto;
+  }
+  .diag .prompt { color: var(--faint); }
+  .diag .cmd { color: var(--text); }
+  .diag .pass { color: var(--teal); }
+  .diag .k { color: var(--muted); }
+  .diag .sum { color: var(--amber); }
+  footer .f-links { display: flex; flex-wrap: wrap; gap: 20px; }
+  footer .f-links a { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); }
+  footer .f-links a:hover { color: var(--amber); }
+  footer .place { font-size: 0.85rem; color: var(--faint); margin-top: 18px; font-family: var(--mono); }
+
+  /* ---------- loop closure toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 80px);
+    z-index: 20; font-family: var(--mono); font-size: 12px; color: var(--teal);
+    background: var(--panel); border: 1px solid var(--teal); border-radius: 8px;
+    padding: 10px 18px; opacity: 0; transition: transform .45s ease, opacity .45s ease;
+    pointer-events: none; white-space: nowrap;
+  }
+  .toast.show { transform: translate(-50%, 0); opacity: 1; }
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add("js");</script>
+
+<nav class="rail" aria-label="Sections">
+  <a class="pose" href="#top"><span class="dot"></span><span class="lbl">x0 hello</span></a>
+  <div class="edge"></div>
+  <a class="pose" href="#work"><span class="dot"></span><span class="lbl">x1 work</span></a>
+  <div class="edge"></div>
+  <a class="pose" href="#projects"><span class="dot"></span><span class="lbl">x2 projects</span></a>
+  <div class="edge"></div>
+  <a class="pose" href="#oss"><span class="dot"></span><span class="lbl">x3 open source</span></a>
+  <div class="edge"></div>
+  <a class="pose" href="#education"><span class="dot"></span><span class="lbl">x4 education</span></a>
+  <div class="edge"></div>
+  <a class="pose" href="#contact"><span class="dot"></span><span class="lbl">x5 contact</span></a>
+</nav>
+
+<header class="hero" id="top">
+  <canvas id="slam" aria-hidden="true"></canvas>
+  <div class="hud" id="hud" aria-hidden="true">
+    <div>trajectory sim <span class="v" id="hud-frame">frame 0000/0600</span></div>
+    <div>VO ATE <span class="drift" id="hud-ate">0.0 m</span></div>
+    <div>loop closure <span class="v" id="hud-lc">pending</span></div>
+  </div>
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="kicker"><span class="p">~/slam</span> <span class="p">~/3d-vision</span> <span class="p">~/tracking</span> <span class="p">~/vla</span></div>
+      <h1>Jash Shah<span class="accent">.</span></h1>
+      <p class="role">
+        Robotics and ML researcher. I build systems that figure out
+        <b>where they are</b>, <b>what they see</b>, and <b>what to do about it</b>:
+        SLAM, multi-object tracking, and vision-language-action models.
+      </p>
+      <div class="links">
+        <a href="https://github.com/jashshah999">github</a>
+        <a href="https://www.linkedin.com/in/jash-shah-999-new/">linkedin</a>
+        <a href="mailto:jashshah.999@gmail.com">email</a>
+        <a href="resume.pdf">resume</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero-caption">
+    <span class="r">what you are watching:</span> visual odometry drifts, a loop closure
+    fires, iSAM2 snaps the whole trajectory back. on real KITTI seq 00 my pipeline takes
+    ATE from 29.14 m to 7.76 m this way.
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat reveal" data-k="oss"><div class="n">36</div><div class="l">merged PRs across 12 repos</div></div>
+    <div class="stat reveal" data-k="shipped"><div class="n">2</div><div class="l">tools live in official HF LeRobot products</div></div>
+    <div class="stat reveal" data-k="writing"><div class="n">1</div><div class="l">guest post on the GTSAM blog</div></div>
+    <div class="stat reveal" data-k="cmu"><div class="n">3.92</div><div class="l">GPA, MS in Robotics @ CMU</div></div>
+  </div>
+</div>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="node">x1</span><h2>work</h2></div>
+
+    <div class="job reveal">
+      <div class="when">2023 - now</div>
+      <div>
+        <h3>Robotics Researcher</h3>
+        <div class="org">Nissan Advanced Technology Center, Silicon Valley</div>
+        <ul>
+          <li>Graph-based transformer pipeline for multi-object tracking: <span class="m">0.71 AMOTA</span> with real-time inference on vehicle</li>
+          <li>Sparse4Dv3 LiDAR-camera fusion tracker on nuScenes: <span class="m">0.650 AMOTA</span>, +0.17 over camera-only baseline</li>
+          <li>First end-to-end LiDAR+camera tracker (raw sensors to tracks, no separate detector), competitive with two-stage SOTA</li>
+          <li>CUDA-accelerated RANSAC ground-plane detection at <span class="m">10 Hz</span>; lag-compensated EKF fusion improving pose estimates ~43%</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job reveal">
+      <div class="when">2023 - 2024</div>
+      <div>
+        <h3>ML Satellite Researcher</h3>
+        <div class="org">Robotics Exploration Lab, Carnegie Mellon University</div>
+        <ul>
+          <li>Led a team of 5 building two-stage region classification and landmark detection for low-power satellite edge hardware</li>
+          <li>18 lightweight YOLOv8n landmark detectors: localization error under <span class="m">50 km</span> from 700 km altitude</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="node">x2</span><h2>projects</h2></div>
+
+    <div class="feature reveal">
+      <div class="imgwrap">
+        <img src="https://raw.githubusercontent.com/jashshah999/gtsam-splatfactors/main/assets/tum_desk_gt_vs_render.png" alt="TUM fr1/desk: camera frame next to the same view rendered from the trained Gaussian map">
+        <span class="img-tag">left: camera | right: my gaussian map, 26 dB, 4 GB laptop GPU</span>
+      </div>
+      <div class="body">
+        <div class="kf">kf 01 <span class="t">| featured on the GTSAM blog</span></div>
+        <h3><a href="https://github.com/jashshah999/gtsam-splatfactors">gtsam-splatfactors</a></h3>
+        <p>
+          3D Gaussian Splatting SLAM with a factor graph backend: gsplat rendering expressed as
+          GTSAM factors, giving loop closure, multi-sensor fusion, and pose uncertainty that pure
+          gradient-descent 3DGS pipelines lack. Up to 85% ATE reduction on KITTI with loop closure.
+          Written up in
+          <a href="https://gtsam.org/2026/08/04/gaussian-splatting-slam.html">3D Gaussian Splatting meets Factor Graph SLAM</a>
+          on the GTSAM blog.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card reveal">
+        <div class="kf">kf 02 <span class="t">| live in official HF tooling</span></div>
+        <h3><a href="https://github.com/jashshah999/lerobot-doctor">lerobot-doctor</a></h3>
+        <p>Dataset quality diagnostics for LeRobot: 12 checks from timestamps to real URDF joint limits. Ships as the Doctor tab of the official LeRobot Dataset Visualizer and on PyPI.</p>
+      </div>
+      <div class="card reveal">
+        <div class="kf">kf 03 <span class="t">| listed on awesome-3DGS</span></div>
+        <h3><a href="https://github.com/jashshah999/vggt-factor-refinement">vggt-factor-refinement</a></h3>
+        <p>Factor graph refinement of VGGT for long-video pose estimation. 70% ATE improvement over naive stitching, COLMAP-free.</p>
+      </div>
+      <div class="card reveal">
+        <div class="kf">kf 04 <span class="t">| hackathon winner</span></div>
+        <h3><a href="https://github.com/praveenVnktsh/robohacks26">zero-shot semantic mapping</a></h3>
+        <p>Spatial memory fusing VLM embeddings with a SLAM pose graph for language-conditioned mobile manipulation. Innate Grand Prize + Best Use of Data at RoboHacks @ Y Combinator.</p>
+      </div>
+      <div class="card reveal">
+        <div class="kf">kf 05 <span class="t">| 3d reconstruction</span></div>
+        <h3><a href="https://github.com/jashshah999/recon3d">recon3d</a></h3>
+        <p>One-command 3D reconstruction from video. No COLMAP needed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="oss">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="node">x3</span><h2>open source</h2></div>
+    <p class="oss-note reveal">
+      Reviewer at HuggingFace LeRobot. Every edge below is a repo I have merged code into;
+      node size is merged PR count. Click a node for the receipts, or see the
+      <a href="https://github.com/jashshah999">full list on GitHub</a>.
+    </p>
+    <svg id="ossgraph" viewBox="0 0 880 430" role="img" aria-label="Graph of open source contributions: 36 merged pull requests across 12 repositories" class="reveal"></svg>
+    <div class="chips">
+      <a href="https://github.com/borglab/gtsam/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">GTSAM <span class="n">11</span></a>
+      <a href="https://github.com/huggingface/lerobot/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">LeRobot <span class="n">9</span></a>
+      <a href="https://github.com/pytorch/rl/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">PyTorch RL <span class="n">3</span></a>
+      <a href="https://github.com/rerun-io/rerun/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">Rerun <span class="n">3</span></a>
+      <a href="https://github.com/borglab/gtsam.org/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">GTSAM Blog <span class="n">2</span></a>
+      <a href="https://github.com/leggedrobotics/rsl_rl/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">RSL_RL <span class="n">2</span></a>
+      <a href="https://github.com/jax-ml/jax/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">JAX <span class="n">1</span></a>
+      <a href="https://github.com/huggingface/transformers/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">Transformers <span class="n">1</span></a>
+      <a href="https://github.com/huggingface/accelerate/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">Accelerate <span class="n">1</span></a>
+      <a href="https://github.com/borglab/wrap/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">wrap <span class="n">1</span></a>
+      <a href="https://github.com/huggingface/lerobot-dataset-visualizer/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">LeRobot Visualizer <span class="n">1</span></a>
+      <a href="https://github.com/MrNeRF/awesome-3D-gaussian-splatting/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged">awesome-3DGS <span class="n">1</span></a>
+    </div>
+  </div>
+</section>
+
+<section id="education">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="node">x4</span><h2>education</h2></div>
+    <div class="edu reveal">
+      <div class="when">2022 - 2024</div>
+      <div>
+        <h3>Carnegie Mellon University</h3>
+        <div class="d">MS in Robotic Systems Development, GPA 3.92/4.0</div>
+      </div>
+    </div>
+    <div class="edu reveal">
+      <div class="when">2017 - 2021</div>
+      <div>
+        <h3>Manipal Institute of Technology</h3>
+        <div class="d">B.Tech Mechatronics, Minor in Robotics</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="diag reveal">
+      <div><span class="prompt">$</span> <span class="cmd">lerobot-doctor jash --ci</span></div>
+      <div><span class="pass">[PASS]</span> <span class="k">slam_and_3d_vision</span> &nbsp;&nbsp;<span class="pass">[PASS]</span> <span class="k">multi_object_tracking</span></div>
+      <div><span class="pass">[PASS]</span> <span class="k">vla_research</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="pass">[PASS]</span> <span class="k">ships_open_source</span></div>
+      <div><span class="sum">Summary: 4 PASS | 0 WARN | responds to email</span></div>
+    </div>
+    <div class="f-links reveal">
+      <a href="https://github.com/jashshah999">github.com/jashshah999</a>
+      <a href="https://www.linkedin.com/in/jash-shah-999-new/">linkedin</a>
+      <a href="mailto:jashshah.999@gmail.com">jashshah.999@gmail.com</a>
+      <a href="resume.pdf">resume.pdf</a>
+    </div>
+    <p class="place">San Francisco Bay Area | this page is a factor graph: 6 poses, 5 odometry edges, 1 loop closure (scroll back up)</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast">loop closure detected: x5 -&gt; x0 | trajectory corrected</div>
+
+<script>
+(function () {
+  "use strict";
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ============ hero: SLAM loop animation ============ */
+  var canvas = document.getElementById("slam");
+  var ctx = canvas.getContext("2d");
+  var css = getComputedStyle(document.documentElement);
+  var C = {
+    gt: css.getPropertyValue("--gt").trim() || "#3a4658",
+    drift: css.getPropertyValue("--drift").trim() || "#f4747f",
+    teal: css.getPropertyValue("--teal").trim() || "#59d4b3",
+    amber: css.getPropertyValue("--amber").trim() || "#ffb454",
+    pt: "rgba(160, 178, 205, 0.35)"
+  };
+  var N = 600, gt = [], drift = [], resid = [], pts = [];
+  var frame = 0, phase = "drive", phaseT = 0, dpr = 1, W = 0, H = 0;
+  var hudFrame = document.getElementById("hud-frame");
+  var hudAte = document.getElementById("hud-ate");
+  var hudLc = document.getElementById("hud-lc");
+
+  var lastW = 0, lastH = 0;
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = canvas.clientWidth; H = canvas.clientHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    /* mobile URL-bar show/hide fires resize with tiny height deltas;
+       do not restart the sim for those */
+    if (Math.abs(W - lastW) > 40 || Math.abs(H - lastH) > 140) {
+      lastW = W; lastH = H;
+      buildGT();
+      reseed();
+      if (reduced) staticFrame();
+    }
+  }
+
+  /* ground-truth loop: wobbly rounded loop placed right-of-center */
+  function buildGT() {
+    gt = [];
+    var narrow = W < 760;
+    var cx = narrow ? W * 0.5 : W * 0.64;
+    var cy = H * 0.52;
+    var rx = narrow ? W * 0.38 : Math.min(W * 0.26, 340);
+    var ry = Math.min(H * 0.32, 260);
+    for (var i = 0; i < N; i++) {
+      var a = (i / N) * Math.PI * 2 - Math.PI / 2;
+      var wob = 1 + 0.14 * Math.sin(3 * a + 1.2) + 0.06 * Math.sin(7 * a);
+      gt.push([cx + rx * wob * Math.cos(a), cy + ry * wob * Math.sin(a)]);
+    }
+  }
+
+  /* drift model: cumulative rotation + random-walk translation from the anchor */
+  function reseed() {
+    drift = []; resid = []; pts = [];
+    var rotRate = (Math.random() * 0.7 + 0.5) * 0.00015 * (Math.random() < 0.5 ? -1 : 1);
+    var wx = 0, wy = 0, dirA = Math.random() * Math.PI * 2;
+    var x0 = gt[0][0], y0 = gt[0][1];
+    for (var i = 0; i < N; i++) {
+      dirA += (Math.random() - 0.5) * 0.25;
+      var step = 0.14;
+      wx += Math.cos(dirA) * step; wy += Math.sin(dirA) * step;
+      var th = rotRate * i * i / N * 3;
+      var dx = gt[i][0] - x0, dy = gt[i][1] - y0;
+      drift.push([
+        x0 + dx * Math.cos(th) - dy * Math.sin(th) + wx,
+        y0 + dx * Math.sin(th) + dy * Math.cos(th) + wy
+      ]);
+      resid.push([(Math.random() - 0.5) * 4, (Math.random() - 0.5) * 4]);
+    }
+    frame = 0; phase = "drive"; phaseT = 0;
+    if (hudLc) { hudLc.textContent = "pending"; hudLc.className = "v"; }
+  }
+
+  function ate(upTo, corrected) {
+    var s = 0, n = Math.max(upTo, 1);
+    for (var i = 0; i < n; i++) {
+      var px = corrected ? gt[i][0] + resid[i][0] : drift[i][0];
+      var py = corrected ? gt[i][1] + resid[i][1] : drift[i][1];
+      var dx = px - gt[i][0], dy = py - gt[i][1];
+      s += Math.sqrt(dx * dx + dy * dy);
+    }
+    return (s / n) * 0.55; /* px -> "meters", display scale only */
+  }
+
+  function drawPath(arr, upTo, color, width, alpha) {
+    ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineWidth = width;
+    ctx.beginPath();
+    for (var i = 0; i <= upTo && i < arr.length; i++) {
+      if (i === 0) ctx.moveTo(arr[i][0], arr[i][1]); else ctx.lineTo(arr[i][0], arr[i][1]);
+    }
+    ctx.stroke(); ctx.globalAlpha = 1;
+  }
+
+  function lerpPath(t) {
+    var out = [];
+    for (var i = 0; i < N; i++) {
+      var tx = gt[i][0] + resid[i][0], ty = gt[i][1] + resid[i][1];
+      out.push([drift[i][0] + (tx - drift[i][0]) * t, drift[i][1] + (ty - drift[i][1]) * t]);
+    }
+    return out;
+  }
+
+  function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+  function heading(arr, i) {
+    var a = arr[Math.max(i - 4, 0)], b = arr[Math.min(i, arr.length - 1)];
+    return Math.atan2(b[1] - a[1], b[0] - a[0]);
+  }
+
+  function drawVehicle(x, y, th, color) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(th);
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.moveTo(9, 0); ctx.lineTo(-6, 5.5); ctx.lineTo(-6, -5.5); ctx.closePath();
+    ctx.fill(); ctx.restore();
+  }
+
+  function drawPoints() {
+    ctx.fillStyle = C.pt;
+    for (var i = 0; i < pts.length; i++) ctx.fillRect(pts[i][0], pts[i][1], 1.6, 1.6);
+  }
+
+  function fmt(n, pad) { var s = String(n); while (s.length < pad) s = "0" + s; return s; }
+
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    /* ground truth: faint dashed */
+    ctx.setLineDash([3, 7]);
+    drawPath(gt, N - 1, C.gt, 1.2, 0.9);
+    ctx.setLineDash([]);
+    drawPoints();
+
+    if (phase === "drive") {
+      frame = Math.min(frame + 2, N - 1);
+      /* spawn map points near current GT pose */
+      if (pts.length < 1100) {
+        for (var k = 0; k < 2; k++) {
+          var g = gt[frame];
+          pts.push([g[0] + (Math.random() - 0.5) * 56, g[1] + (Math.random() - 0.5) * 56]);
+        }
+      }
+      drawPath(drift, frame, C.drift, 1.8, 0.95);
+      var h = heading(drift, frame);
+      drawVehicle(drift[frame][0], drift[frame][1], h, C.drift);
+      if (hudFrame) hudFrame.textContent = "frame " + fmt(frame, 4) + "/0600";
+      if (hudAte) hudAte.textContent = ate(frame, false).toFixed(1) + " m";
+      if (frame >= N - 1) { phase = "closure"; phaseT = 0; }
+    } else if (phase === "closure") {
+      phaseT++;
+      drawPath(drift, N - 1, C.drift, 1.8, 0.95);
+      /* loop closure edge: current pose back to anchor */
+      var blink = phaseT % 20 < 12;
+      if (blink) {
+        ctx.strokeStyle = C.amber; ctx.lineWidth = 1.6; ctx.globalAlpha = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(drift[N - 1][0], drift[N - 1][1]);
+        var mx = (drift[N - 1][0] + gt[0][0]) / 2 + 30;
+        var my = (drift[N - 1][1] + gt[0][1]) / 2 - 46;
+        ctx.quadraticCurveTo(mx, my, gt[0][0], gt[0][1]);
+        ctx.stroke(); ctx.globalAlpha = 1;
+        ctx.fillStyle = C.amber;
+        ctx.beginPath(); ctx.arc(gt[0][0], gt[0][1], 4, 0, 7); ctx.fill();
+      }
+      if (hudLc) { hudLc.textContent = "detected: x0599 -> x0000"; hudLc.className = "v"; }
+      if (phaseT > 70) { phase = "correct"; phaseT = 0; }
+    } else if (phase === "correct") {
+      phaseT++;
+      var t = ease(Math.min(phaseT / 80, 1));
+      var p = lerpPath(t);
+      var col = t > 0.6 ? C.teal : C.drift;
+      drawPath(p, N - 1, col, 1.8, 0.95);
+      drawVehicle(p[N - 1][0], p[N - 1][1], heading(p, N - 1), col);
+      if (hudAte) hudAte.textContent = (ate(N, false) * (1 - t) + ate(N, true) * t).toFixed(1) + " m";
+      if (hudLc && t >= 1) { hudLc.textContent = "optimized (iSAM2)"; hudLc.className = "ok"; }
+      if (hudAte) hudAte.className = t > 0.6 ? "ok" : "drift";
+      if (phaseT > 190) { if (hudAte) hudAte.className = "drift"; reseed(); }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function staticFrame() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.setLineDash([3, 7]); drawPath(gt, N - 1, C.gt, 1.2, 0.9); ctx.setLineDash([]);
+    for (var i = 0; i < 900; i++) {
+      var g = gt[Math.floor(Math.random() * N)];
+      pts.push([g[0] + (Math.random() - 0.5) * 56, g[1] + (Math.random() - 0.5) * 56]);
+    }
+    drawPoints();
+    drawPath(lerpPath(1), N - 1, C.teal, 1.8, 0.95);
+    if (hudFrame) hudFrame.textContent = "frame 0600/0600";
+    if (hudAte) { hudAte.textContent = ate(N, true).toFixed(1) + " m"; hudAte.className = "ok"; }
+    if (hudLc) { hudLc.textContent = "optimized (iSAM2)"; hudLc.className = "ok"; }
+  }
+
+  resize();
+  window.addEventListener("resize", resize);
+  if (!reduced) requestAnimationFrame(tick);
+
+  /* ============ oss orbit graph ============ */
+  var repos = [
+    { n: "GTSAM", c: 11, u: "https://github.com/borglab/gtsam/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 180, r: 150 },
+    { n: "LeRobot", c: 9, u: "https://github.com/huggingface/lerobot/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 0, r: 150 },
+    { n: "PyTorch RL", c: 3, u: "https://github.com/pytorch/rl/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 145, r: 130 },
+    { n: "Rerun", c: 3, u: "https://github.com/rerun-io/rerun/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 35, r: 130 },
+    { n: "GTSAM Blog", c: 2, u: "https://github.com/borglab/gtsam.org/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 215, r: 132 },
+    { n: "RSL_RL", c: 2, u: "https://github.com/leggedrobotics/rsl_rl/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 325, r: 132 },
+    { n: "JAX", c: 1, u: "https://github.com/jax-ml/jax/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 112, r: 120 },
+    { n: "Transformers", c: 1, u: "https://github.com/huggingface/transformers/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 68, r: 120 },
+    { n: "Accelerate", c: 1, u: "https://github.com/huggingface/accelerate/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 248, r: 122 },
+    { n: "wrap", c: 1, u: "https://github.com/borglab/wrap/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 292, r: 122 },
+    { n: "LeRobot Visualizer", c: 1, u: "https://github.com/huggingface/lerobot-dataset-visualizer/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 90, r: 155 },
+    { n: "awesome-3DGS", c: 1, u: "https://github.com/MrNeRF/awesome-3D-gaussian-splatting/pulls?q=is%3Apr+author%3Ajashshah999+is%3Amerged", a: 270, r: 158 }
+  ];
+  var svg = document.getElementById("ossgraph");
+  if (svg) {
+    var NS = "http://www.w3.org/2000/svg";
+    var CX = 440, CY = 215;
+    function el(tag, attrs, parent) {
+      var e = document.createElementNS(NS, tag);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      parent.appendChild(e); return e;
+    }
+    repos.forEach(function (rp) {
+      var rad = rp.a * Math.PI / 180;
+      var x = CX + Math.cos(rad) * rp.r * 1.75;
+      var y = CY - Math.sin(rad) * rp.r * 0.92;
+      var nr = 6 + 4.2 * Math.sqrt(rp.c);
+      el("line", { x1: CX, y1: CY, x2: x, y2: y, "stroke-width": (0.8 + rp.c * 0.32).toFixed(1) }, svg);
+      /* factor square on the edge midpoint */
+      var fx = (CX + x) / 2, fy = (CY + y) / 2;
+      el("rect", { x: fx - 2.6, y: fy - 2.6, width: 5.2, height: 5.2, fill: "#0a0e14", stroke: "#4a5568", "stroke-width": 1 }, svg);
+      var a = el("a", { href: rp.u, target: "_blank", rel: "noopener" }, svg);
+      el("circle", { cx: x, cy: y, r: nr, "class": "repo-node" }, a);
+      var cnt = el("text", { x: x, y: y + 4, "text-anchor": "middle", "class": "cnt" }, a);
+      cnt.textContent = rp.c;
+      var side = Math.cos(rad);
+      var lx = x + (side > 0.25 ? nr + 8 : (side < -0.25 ? -nr - 8 : 0));
+      var ly = y + (Math.abs(side) <= 0.25 ? (Math.sin(rad) > 0 ? -nr - 10 : nr + 20) : 4);
+      var lbl = el("text", { x: lx, y: ly, "text-anchor": side > 0.25 ? "start" : (side < -0.25 ? "end" : "middle") }, a);
+      lbl.textContent = rp.n;
+      var t = el("title", {}, a);
+      t.textContent = rp.n + ": " + rp.c + " merged PR" + (rp.c > 1 ? "s" : "");
+    });
+    var cc = el("circle", { cx: CX, cy: CY, r: 34, fill: "#0f1521", stroke: "#ffb454", "stroke-width": 1.5 }, svg);
+    var t1 = el("text", { x: CX, y: CY - 1, "text-anchor": "middle", "class": "center-label" }, svg);
+    t1.textContent = "36 PRs";
+    var t2 = el("text", { x: CX, y: CY + 15, "text-anchor": "middle" }, svg);
+    t2.textContent = "merged";
+  }
+
+  /* ============ rail + reveals ============ */
+  var sections = ["top", "work", "projects", "oss", "education", "contact"];
+  var poses = document.querySelectorAll(".rail .pose");
+  var maxReached = 0;
+  var secObs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      var idx = sections.indexOf(en.target.id);
+      if (idx < 0) return;
+      maxReached = Math.max(maxReached, idx);
+      poses.forEach(function (p, i) { p.classList.toggle("on", i === idx); });
+    });
+  }, { rootMargin: "-38% 0px -52% 0px" });
+  sections.forEach(function (id) {
+    var s = document.getElementById(id);
+    if (s) secObs.observe(s);
+  });
+
+  var revObs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { en.target.classList.add("vis"); revObs.unobserve(en.target); }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll(".reveal").forEach(function (e) { revObs.observe(e); });
+
+  /* ============ loop closure toast ============ */
+  var toast = document.getElementById("toast");
+  var toastShown = false;
+  window.addEventListener("scroll", function () {
+    /* a short footer may never reach the rail observer's band; detect page bottom directly */
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 60) {
+      maxReached = 5;
+      poses.forEach(function (p, i) { p.classList.toggle("on", i === 5); });
+    }
+    if (!toastShown && maxReached >= 5 && window.scrollY < 120) {
+      toastShown = true;
+      toast.classList.add("show");
+      setTimeout(function () { toast.classList.remove("show"); }, 4200);
+    }
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>
