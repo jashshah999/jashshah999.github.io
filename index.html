@@ -608,7 +608,13 @@
 
   function fmt(n, pad) { var s = String(n); while (s.length < pad) s = "0" + s; return s; }
 
+  var heroVisible = true;
+  new IntersectionObserver(function (entries) {
+    heroVisible = entries[0].isIntersecting;
+  }).observe(document.getElementById("top"));
+
   function tick() {
+    if (!heroVisible) { requestAnimationFrame(tick); return; }
     ctx.clearRect(0, 0, W, H);
     /* ground truth: faint dashed */
     ctx.setLineDash([3, 7]);
