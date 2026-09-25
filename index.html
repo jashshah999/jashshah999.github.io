@@ -322,6 +322,56 @@
     pointer-events: none; white-space: nowrap;
   }
   .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+  /* ---------- awards ---------- */
+  .awards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .award {
+    border: 1px solid var(--border); border-radius: 8px; padding: 15px 17px;
+    background: var(--panel); transition: border-color .2s, transform .2s;
+  }
+  .award:hover { border-color: var(--amber); transform: translateY(-2px); }
+  .award .w { font-family: var(--mono); font-size: .72rem; color: var(--teal); letter-spacing: .04em; }
+  .award h3 { font-family: "Space Grotesk", var(--sans); font-size: 0.99rem; font-weight: 600; margin: 3px 0 3px; letter-spacing: -.01em; }
+  .award p { font-size: 0.85rem; color: var(--muted); }
+  @media (max-width: 700px) { .awards { grid-template-columns: 1fr; } }
+
+  /* ---------- beyond the lab ---------- */
+  .beyond-list { margin-bottom: 20px; }
+  .beyond-list li {
+    list-style: none; font-size: 0.93rem; color: var(--text);
+    padding-left: 22px; position: relative; margin-bottom: 9px;
+  }
+  .beyond-list li::before {
+    content: ""; position: absolute; left: 3px; top: .55em;
+    width: 7px; height: 7px; border: 1.5px solid var(--teal); transform: rotate(45deg);
+  }
+  .ichips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ichips span {
+    font-family: var(--mono); font-size: 0.78rem; color: var(--text);
+    border: 1px solid var(--border); border-radius: 999px; padding: 5px 13px;
+  }
+
+  /* ---------- projects readability ---------- */
+  .card { padding: 22px; gap: 8px; }
+  .card h3 { font-size: 1.05rem; }
+  .card p { font-size: 0.9rem; line-height: 1.58; color: #aeb9c9; }
+  .kf { font-size: 10.5px; letter-spacing: .04em; margin-bottom: 6px; }
+  .more-head {
+    font-family: var(--mono); font-size: 0.78rem; color: var(--muted);
+    text-transform: lowercase; letter-spacing: .1em; margin: 30px 0 16px;
+  }
+  .more-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 26px; }
+  .more-item {
+    font-size: 0.9rem; color: #9aa6b8; padding-left: 18px; position: relative; line-height: 1.5;
+  }
+  .more-item::before {
+    content: ""; position: absolute; left: 2px; top: .5em; width: 6px; height: 6px;
+    border: 1.5px solid var(--faint); transform: rotate(45deg);
+  }
+  .more-item b { color: var(--text); font-weight: 600; }
+  .more-item a { color: var(--text); }
+  .more-item a:hover { color: var(--amber); }
+  @media (max-width: 700px) { .more-list { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -336,9 +386,13 @@
   <div class="edge"></div>
   <a class="pose" href="#oss"><span class="dot"></span><span class="lbl">x3 open source</span></a>
   <div class="edge"></div>
-  <a class="pose" href="#education"><span class="dot"></span><span class="lbl">x4 education</span></a>
+  <a class="pose" href="#awards"><span class="dot"></span><span class="lbl">x4 awards</span></a>
   <div class="edge"></div>
-  <a class="pose" href="#contact"><span class="dot"></span><span class="lbl">x5 contact</span></a>
+  <a class="pose" href="#education"><span class="dot"></span><span class="lbl">x5 education</span></a>
+  <div class="edge"></div>
+  <a class="pose" href="#beyond"><span class="dot"></span><span class="lbl">x6 beyond</span></a>
+  <div class="edge"></div>
+  <a class="pose" href="#contact"><span class="dot"></span><span class="lbl">x7 contact</span></a>
 </nav>
 
 <header class="hero" id="top">
@@ -411,6 +465,76 @@
         </ul>
       </div>
     </div>
+
+    <div class="job reveal">
+      <div class="when">2023 - 2024</div>
+      <div>
+        <h3>Computer Vision Research Assistant</h3>
+        <div class="org">Norilla &mdash; Mixed Reality Learning Platform, Pittsburgh</div>
+        <ul>
+          <li>OpenCV sunlight-compensation and temporal filtering for a vision system reliable at <span class="m">30 FPS</span> under changing light</li>
+          <li>Occlusion-aware background segmentation from Intel RealSense depth; k-NN classifier +27% in occluded scenes</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job reveal">
+      <div class="when">2021</div>
+      <div>
+        <h3>Computer Vision &amp; Deep Learning Intern</h3>
+        <div class="org">RapidAI Vision, Defence Research &amp; Development Organisation (DRDO)</div>
+        <ul>
+          <li>Vision-based precision landing of a UAV swarm from 9 m using fiducial marker pads; <span class="m">4%</span> pad-width error in PX4/Gazebo SITL</li>
+          <li>Deployed a custom ORB-SLAM2 variant reconstructing the site to 90% accuracy from a monocular camera in real time</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job reveal">
+      <div class="when">2020</div>
+      <div>
+        <h3>Computer Vision Intern</h3>
+        <div class="org">Autonomous Robots &amp; Multi-Robot Systems Lab, IIT Bombay</div>
+        <ul>
+          <li>SqueezeSeg-style CNN + recurrent CRF for real-time road-object segmentation on LiDAR point clouds, <span class="m">IoU 0.65</span></li>
+          <li>Built a spherical-projection data loader mapping 3D point clouds to 2D for the network</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job reveal">
+      <div class="when">2019 - 2020</div>
+      <div>
+        <h3>Founder &amp; Team Lead &mdash; Hyperloop</h3>
+        <div class="org">loopMIT, official Hyperloop team of MIT Manipal</div>
+        <ul>
+          <li>Founded and led a cross-year team (freshers to PhDs); secured university funding to design a <span class="m">6-ft</span> Hyperloop pod</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job reveal">
+      <div class="when">2017 - 2019</div>
+      <div>
+        <h3>Robotics Engineer</h3>
+        <div class="org">RoboManipal, official robotics team of MIT Manipal</div>
+        <ul>
+          <li>Holonomic robot with a 3-DOF arm to solve Tetris &mdash; <span class="m">All India Rank 2</span>; a kinematically-analysed quadruped leg</li>
+          <li>Maze-solving / line-following and omni-wheel bots for national competitions (IIT Kharagpur, ABU Robocon)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="job reveal">
+      <div class="when">2016 - 2019</div>
+      <div>
+        <h3>Automation &amp; Mechanical Intern</h3>
+        <div class="org">Mahindra &amp; Mahindra &middot; Technofour Electronics &middot; Saisons</div>
+        <ul>
+          <li>End-to-end automation of connecting-rod deburring at Mahindra; SolidWorks conveyor + CNC code optimisation at Technofour</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -443,25 +567,45 @@
 
     <div class="grid">
       <div class="card reveal">
-        <div class="kf">kf 02 <span class="t">| live in official HF tooling</span></div>
+        <div class="kf"><span class="t">live in official HF tooling</span></div>
         <h3><a href="https://github.com/jashshah999/lerobot-doctor">lerobot-doctor</a></h3>
-        <p>Dataset quality diagnostics for LeRobot: 12 checks from timestamps to real URDF joint limits. Ships as the Doctor tab of the official LeRobot Dataset Visualizer and on PyPI.</p>
+        <p>Dataset-quality diagnostics for LeRobot. Ships as the Doctor tab of the official LeRobot Dataset Visualizer, and on PyPI.</p>
       </div>
       <div class="card reveal">
-        <div class="kf">kf 03 <span class="t">| listed on awesome-3DGS</span></div>
+        <div class="kf"><span class="t">listed on awesome-3DGS</span></div>
         <h3><a href="https://github.com/jashshah999/vggt-factor-refinement">vggt-factor-refinement</a></h3>
-        <p>Factor graph refinement of VGGT for long-video pose estimation. 70% ATE improvement over naive stitching, COLMAP-free.</p>
+        <p>Factor-graph refinement of VGGT for long-video pose estimation. 70% ATE improvement over naive stitching, COLMAP-free.</p>
       </div>
       <div class="card reveal">
-        <div class="kf">kf 04 <span class="t">| hackathon winner</span></div>
+        <div class="kf"><span class="t">YC hackathon winner</span></div>
         <h3><a href="https://github.com/praveenVnktsh/robohacks26">zero-shot semantic mapping</a></h3>
-        <p>Spatial memory fusing VLM embeddings with a SLAM pose graph for language-conditioned mobile manipulation. Innate Grand Prize + Best Use of Data at RoboHacks @ Y Combinator.</p>
+        <p>VLM embeddings fused with a SLAM pose graph for language-conditioned mobile manipulation. Grand Prize + Best Use of Data at RoboHacks @ YC.</p>
       </div>
       <div class="card reveal">
-        <div class="kf">kf 05 <span class="t">| 3d reconstruction</span></div>
-        <h3><a href="https://github.com/jashshah999/recon3d">recon3d</a></h3>
-        <p>One-command 3D reconstruction from video. No COLMAP needed.</p>
+        <div class="kf"><span class="t">debugged a blind VLA</span></div>
+        <h3><a href="https://github.com/jashshah999/vla-lite">vla-lite</a></h3>
+        <p>Runs OpenVLA-7B on an 8 GB GPU and fixes a silent bug that left the policy blind on modern transformers &mdash; same action for every image.</p>
       </div>
+      <div class="card reveal">
+        <div class="kf"><span class="t">ranked 18th &middot; Alphabet challenge</span></div>
+        <h3><a href="https://www.intrinsic.ai/events/ai-for-industry-challenge">robotic cable insertion</a></h3>
+        <p>Vision-guided cable insertion (sub-5 mm) for Intrinsic's AI for Industry Challenge; cut target-pose error 7&times;. Team HexDex.</p>
+      </div>
+      <div class="card reveal">
+        <div class="kf"><span class="t">3d reconstruction</span></div>
+        <h3><a href="https://github.com/jashshah999/recon3d">recon3d</a></h3>
+        <p>One-command 3D reconstruction from a single handheld video. No COLMAP or manual calibration.</p>
+      </div>
+    </div>
+
+    <div class="more-head reveal">also built</div>
+    <div class="more-list reveal">
+      <div class="more-item"><b><a href="https://github.com/jashshah999/gtsam-torch">gtsam-torch</a></b> &mdash; PyTorch autograd bridge for GTSAM factor graphs.</div>
+      <div class="more-item"><b><a href="https://github.com/jashshah999/lerobot-bench">lerobot-bench</a></b> &mdash; statistically rigorous A/B benchmarking for robot policies.</div>
+      <div class="more-item"><b><a href="https://drive.google.com/file/d/1Sv3lTWL6n4pstU4J_WpOLLT_y1kTA2j_/view">PointSLAM++</a></b> &mdash; SuperPoint + keyframe re-anchoring for dense RGBD SLAM.</div>
+      <div class="more-item"><b>CubeSat vision</b> &mdash; lightweight CNN for spacecraft pose from ~700 km (CMU).</div>
+      <div class="more-item"><b>vision-based obstacle avoidance</b> &mdash; TD3 RL fusing an RGB camera with 2D LiDAR.</div>
+      <div class="more-item"><b>hand tracking &amp; handover</b> &mdash; MediaPipe hand pose driving a Franka arm.</div>
     </div>
   </div>
 </section>
@@ -492,22 +636,89 @@
   </div>
 </section>
 
+<section id="awards">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="node">x4</span><h2>awards &amp; recognition</h2></div>
+    <div class="awards">
+      <div class="award reveal">
+        <div class="w">2026</div>
+        <h3>Grand Prize + Best Use of Data</h3>
+        <p>RoboHacks @ Y Combinator, out of 120 builders.</p>
+      </div>
+      <div class="award reveal">
+        <div class="w">2026</div>
+        <h3>Featured on the GTSAM blog</h3>
+        <p>Guest post: "3D Gaussian Splatting meets Factor Graph SLAM" on Frank Dellaert's GTSAM.</p>
+      </div>
+      <div class="award reveal">
+        <div class="w">2026</div>
+        <h3>Ranked 18th &mdash; Intrinsic AI for Industry Challenge</h3>
+        <p>Alphabet's Intrinsic cable-insertion challenge. Team HexDex.</p>
+      </div>
+      <div class="award reveal">
+        <div class="w">2018</div>
+        <h3>All India Rank 2 &mdash; World Robot Olympiad</h3>
+        <p>Also Rank 2 at the Zonal Autonomous Robotics Challenge.</p>
+      </div>
+      <div class="award reveal">
+        <div class="w">2016</div>
+        <h3>All India Physics Topper</h3>
+        <p>Cambridge AS-Level Physics, India topper for the session.</p>
+      </div>
+      <div class="award reveal">
+        <div class="w">2021</div>
+        <h3>Drone Dojo scholarship</h3>
+        <p>"Advanced Precision Landing" scholarship (~$400) for helping others through technical issues.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="education">
   <div class="wrap">
-    <div class="sec-head reveal"><span class="node">x4</span><h2>education</h2></div>
+    <div class="sec-head reveal"><span class="node">x5</span><h2>education</h2></div>
     <div class="edu reveal">
       <div class="when">2022 - 2024</div>
       <div>
         <h3>Carnegie Mellon University</h3>
-        <div class="d">MS in Robotic Systems Development, GPA 3.92/4.0</div>
+        <div class="d">MS in Robotic Systems Development, GPA 3.92/4.0 &middot; Pittsburgh, PA</div>
       </div>
     </div>
     <div class="edu reveal">
       <div class="when">2017 - 2021</div>
       <div>
         <h3>Manipal Institute of Technology</h3>
-        <div class="d">B.Tech Mechatronics, Minor in Robotics</div>
+        <div class="d">B.Tech Mechatronics, Minor in Robotics &amp; Automation, GPA 8.78/10 &middot; Manipal, India</div>
       </div>
+    </div>
+    <div class="edu reveal">
+      <div class="when">2015 - 2017</div>
+      <div>
+        <h3>Aditya Birla World Academy</h3>
+        <div class="d">Cambridge A-Levels (Physics, Chemistry, Maths: A, A, A) &middot; India Physics topper</div>
+      </div>
+    </div>
+    <div class="edu reveal">
+      <div class="when">2012 - 2015</div>
+      <div>
+        <h3>Hill Spring International School</h3>
+        <div class="d">IGCSE &middot; 5 A*s, 3 As</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="beyond">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="node">x6</span><h2>beyond the lab</h2></div>
+    <ul class="beyond-list reveal">
+      <li>Founder and writer of a robotics &amp; tech blog, <a href="https://justtechythings.wordpress.com">justtechythings</a> (1.4k+ reads).</li>
+      <li>Certified open-water scuba diver, and Himalayan trekker &mdash; summited Pangarchulla (4,700 m) and Hampta Pass (4,270 m).</li>
+      <li>Chaired 2 Model UN conferences and won 2 MUN awards; organizer for TechTatva, MIT Manipal's tech fest.</li>
+      <li>Fluent in English, French, and Hindi (studied French for 10 years); class representative for 8 semesters.</li>
+    </ul>
+    <div class="ichips reveal">
+      <span>robotics</span><span>3d vision</span><span>hyperloop</span><span>trekking</span><span>scuba</span><span>cricket</span><span>lego</span>
     </div>
   </div>
 </section>
@@ -526,11 +737,11 @@
       <a href="mailto:jashshah.999@gmail.com">jashshah.999@gmail.com</a>
       <a href="resume.pdf">resume.pdf</a>
     </div>
-    <p class="place">San Francisco Bay Area | this page is a factor graph: 6 poses, 5 odometry edges, 1 loop closure (scroll back up)</p>
+    <p class="place">San Francisco Bay Area | this page is a factor graph: 8 poses, 7 odometry edges, 1 loop closure (scroll back up)</p>
   </div>
 </footer>
 
-<div class="toast" id="toast">loop closure detected: x5 -&gt; x0 | trajectory corrected</div>
+<div class="toast" id="toast">loop closure detected: x7 -&gt; x0 | trajectory corrected</div>
 
 <script>
 (function () {
@@ -802,7 +1013,7 @@
   }
 
   /* ============ rail + reveals ============ */
-  var sections = ["top", "work", "projects", "oss", "education", "contact"];
+  var sections = ["top", "work", "projects", "oss", "awards", "education", "beyond", "contact"];
   var poses = document.querySelectorAll(".rail .pose");
   var maxReached = 0;
   var secObs = new IntersectionObserver(function (entries) {
@@ -872,10 +1083,10 @@
   window.addEventListener("scroll", function () {
     /* a short footer may never reach the rail observer's band; detect page bottom directly */
     if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 60) {
-      maxReached = 5;
-      poses.forEach(function (p, i) { p.classList.toggle("on", i === 5); });
+      maxReached = 7;
+      poses.forEach(function (p, i) { p.classList.toggle("on", i === 7); });
     }
-    if (!toastShown && maxReached >= 5 && window.scrollY < 120) {
+    if (!toastShown && maxReached >= 7 && window.scrollY < 120) {
       toastShown = true;
       toast.classList.add("show");
       setTimeout(function () { toast.classList.remove("show"); }, 4200);
