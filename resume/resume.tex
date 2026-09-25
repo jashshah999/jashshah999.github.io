@@ -150,9 +150,9 @@
         San Francisco, CA
         \textbullet{} \href{mailto:jashshah.999@gmail.com}{jashshah.999@gmail.com}
         \textbullet{} \href{tel:+14129548384}{+1 (412) 954-8384}
-        \textbullet{} \href{https://jashshah999.github.io}{Website}
         \textbullet{} \href{https://linkedin.com/in/jash-shah-2b790146}{LinkedIn}
         \textbullet{} \href{https://github.com/jashshah999}{Github}
+        \textbullet{} \href{https://jashshah999.github.io}{Website}
     \end{header}
 
     \vspace{3pt}
@@ -179,6 +179,12 @@
     \textbf{Manipal Institute of Technology} \newline
     {\small B.Tech Mechatronics (Minor in Robotics) • GPA: 8.78/10}
 \end{twocolentry}
+\vspace{0.08cm}
+\begin{onecolentry}
+    \begin{highlights}
+        \item \textbf{Key Courses:} Machine Vision and Image Processing, AI, Intro to ML, Robot Kinematics, Robot Dynamics, Linear Algebra
+    \end{highlights}
+\end{onecolentry}
 
 
 \customsection{Experience}
@@ -195,11 +201,12 @@
     \begin{highlights}
         \item Engineered graph-based transformer pipeline for multi-object tracking, achieving 0.71 AMOTA with real-time inference on vehicle
         \item Developed Sparse4Dv3 LiDAR-Camera fusion tracker on nuScenes; hit 0.650 AMOTA, +0.17 over camera-only baseline
+        \item Re-architected data pipeline to be detector-agnostic, enabling the integration of BEVFusion detections on the nuScenes benchmark
         \item Optimized 2b-param ViT for simulation; reached 9.2\% MFU, 29x speedup by resolving silent upcasting and bottlenecks via profiling
         \item Built remote driving system's online pose estimation module using C++ and ROS achieving 50cm lateral and 0.5 deg yaw accuracy
         \item Pioneered first end-to-end LiDAR+Camera tracker (raw sensors to tracks, no separate detector); competitive with two-stage SOTA
         \item Engineered RANSAC-based ground plane detection with CUDA acceleration, achieving 10Hz real-time processing of point cloud
-        \item Fused LiDAR data with on-board odometry using lag compensated EKF, resulting in $\sim$43\% improvement in vehicle pose estimate
+        \item Fused LiDAR data with on-board odometry using lag compensated EKF, resulting in ~43\% improvement in vehicle pose estimate
         \item Designed Hungarian track-matching architecture to identify ego vehicle from LiDAR tracked objects with 96\% accuracy in real-time
     \end{highlights}
 \end{onecolentry}
@@ -236,38 +243,21 @@
         \item Deployed custom ORBSLAM2 variant to reconstruct site with 90\% accuracy using monocular camera and localized UAV in real-time
     \end{highlights}
 \end{onecolentry}
-\vspace{0.15cm}
+
 
 \customsection{Projects}
 \begin{onecolentry}
-    \textbf{Open Source:} Reviewer at \texttt{huggingface/lerobot}; 36 merged PRs across 12 repos: \texttt{gtsam}, \texttt{lerobot}, \texttt{jax}, \texttt{pytorch/rl}, \texttt{rerun}, \texttt{transformers}, \texttt{accelerate}
+    \textbf{Open Source:} Reviewer and contributor for \externallink{https://github.com/huggingface/lerobot}{Hugging Face LeRobot}; merged PRs to \externallink{https://github.com/jax-ml/jax}{JAX}, \externallink{https://github.com/pytorch/rl}{PyTorch-RL}, \externallink{https://github.com/borglab/gtsam}{GTSAM}, \externallink{https://github.com/huggingface/transformers}{Transformers}, and \externallink{https://github.com/rerun-io/rerun}{Rerun}
 \end{onecolentry}
-\vspace{0.15cm}
-
-\begin{twocolentry}{
-    {\small\textcolor{gray}{\textit{06/2026 – 08/2026}}}
-}
-    \textbf{gtsam-splatfactors: Gaussian Splatting meets Factor Graph SLAM} \externallink{https://gtsam.org/2026/08/04/gaussian-splatting-slam.html}{}\newline
-    {\small Featured on the official GTSAM blog }
-\end{twocolentry}
-\vspace{0.08cm}
+\vspace{0.1cm}
 \begin{onecolentry}
     \begin{highlights}
-        \item Expressed gsplat rendering as GTSAM factors (photometric residuals with se(3) Jacobians inside iSAM2), adding loop closure, IMU fusion, and pose covariance that gradient-descent 3DGS-SLAM pipelines lack; up to 85\% ATE reduction on KITTI
-    \end{highlights}
-\end{onecolentry}
-\vspace{0.15cm}
-
-\begin{twocolentry}{
-    {\small\textcolor{gray}{\textit{05/2026 – Present}}}
-}
-    \textbf{lerobot-doctor: Dataset Quality Diagnostics for LeRobot} \externallink{https://github.com/jashshah999/lerobot-doctor}{}\newline
-    {\small Live in official HuggingFace LeRobot tooling }
-\end{twocolentry}
-\vspace{0.08cm}
-\begin{onecolentry}
-    \begin{highlights}
-        \item Built a 12-check dataset diagnostic tool (timestamps, actions, video integrity, real URDF joint limits); shipped on PyPI and integrated as the Doctor tab of HuggingFace's official LeRobot Dataset Visualizer
+        \item \textbf{\externallink{https://github.com/jashshah999/lerobot-doctor}{lerobot-doctor}} (42\,\faStar{}) --- dataset-quality diagnostics for LeRobot v3 --- schema, statistics, integrity checks, and repair hints
+        \item \textbf{\externallink{https://github.com/jashshah999/vla-lite}{vla-lite}} --- fixed a silent bug that left OpenVLA-7B blind on modern transformers; adds 4-bit inference on an 8\,GB GPU
+        \item \textbf{\externallink{https://github.com/jashshah999/gtsam-splatfactors}{gtsam-splatfactors}} (31\,\faStar{}) --- Gaussian-Splatting SLAM in GTSAM/iSAM2; featured on the official \externallink{https://gtsam.org/2026/08/04/gaussian-splatting-slam.html}{GTSAM blog}
+        \item \textbf{\externallink{https://github.com/jashshah999/vggt-factor-refinement}{vggt-factor-refinement}} (51\,\faStar{}) --- COLMAP-free SfM that refines VGGT 3D reconstruction with GTSAM factor graphs
+        \item \textbf{\externallink{https://github.com/jashshah999/recon3d}{recon3d}} (27\,\faStar{}) --- one-command 3D reconstruction from a single handheld video --- no COLMAP or manual camera calibration
+        \item \textbf{\externallink{https://github.com/jashshah999/lerobot-bench}{lerobot-bench}} --- statistically rigorous A/B benchmarking of robot-learning policies
     \end{highlights}
 \end{onecolentry}
 \vspace{0.15cm}
@@ -276,47 +266,48 @@
     {\small\textcolor{gray}{\textit{04/2026}}}
 }
     \textbf{Zero-Shot Semantic Mapping for Mobile Manipulation} \externallink{https://www.linkedin.com/feed/update/urn:li:activity:7449987866274988033/}{}\newline
-    {\small RoboHacks @ Y Combinator }
+    {\small \textbf{Grand Prize Winner} --- RoboHacks @ Y Combinator (120 builders) }
 \end{twocolentry}
 \vspace{0.08cm}
 \begin{onecolentry}
     \begin{highlights}
         \item Built spatial memory layer fusing Gemma VLM embeddings with SLAM pose graph for zero-shot object retrieval in novel scenes
-        \item Trained ACT policy on Innate OS for 6-DoF pick-and-place; integrated semantic map for language-conditioned task dispatch
-        \item Won Innate Grand Prize + Best Use of Data (YC, 120 builders); shipped full stack on MARS robot in under 2 days
+        \item Trained ACT policy on Innate OS for 6-DoF pick-and-place; integrated the semantic map for language-conditioned task dispatch
+        \item Won the Grand Prize and Best Use of Data; built and shipped the full perception-to-action stack on a MARS robot in under 2 days
     \end{highlights}
 \end{onecolentry}
 \vspace{0.15cm}
 
 \begin{twocolentry}{
-    {\small\textcolor{gray}{\textit{08/2022 – 08/2024 • Pittsburgh, PA}}}
+    {\small\textcolor{gray}{\textit{2026}}}
 }
-    \textbf{Automated Remote Driving using External Perception Sensors} \externallink{https://mrsdprojects.ri.cmu.edu/2023teame/}{}\newline
-    {\small Nissan North America (Capstone Project) }
+    \textbf{Vision-Guided Robotic Cable Insertion} \externallink{https://www.intrinsic.ai/events/ai-for-industry-challenge}{}\newline
+    {\small Intrinsic (Alphabet) AI for Industry Challenge --- Team HexDex, ranked 18th }
 \end{twocolentry}
 \vspace{0.08cm}
 \begin{onecolentry}
     \begin{highlights}
-        \item Explored a novel I2V stack to estimate yaw and lateral deviation from BEV, enabling 75\% lane-keeping accuracy at 22.5 cm/s
-        \item Built bundle adjustment pipeline to refine multi-camera calibration using geometric constraints and fiducial correspondences
+        \item Trained and deployed a vision-guided cable-insertion policy on a physical robot cell --- a task needing sub-5 mm placement accuracy
+        \item Cut target pose error 7x (26--99 mm to 3.6 mm) by inferring it from a nearby well-localized part via known geometry
+        \item Hardened the pipeline (startup, idempotency, and indexing bugs) and built offline evaluation tooling with ground-truth metrics
     \end{highlights}
 \end{onecolentry}
-
+\vspace{0.15cm}
 
 \customsection{Skills}
 
 \begin{onecolentry}
-    \textbf{Programming Languages:} Python, C++, C, Java, JavaScript, MATLAB, Simulink, Bash
+    \textbf{Programming Languages:} Python, C++, C, CUDA, Java, JavaScript, MATLAB, Simulink, Bash
 \end{onecolentry}
 \vspace{0.08cm}
 
 \begin{onecolentry}
-    \textbf{Frameworks and Libraries:} OpenCV, PyTorch, CUDA, ROS, TensorFlow, Point Cloud Library, Ardupilot, PX4 Autopilot
+    \textbf{Frameworks and Libraries:} PyTorch, JAX, CUDA, Hugging Face Transformers, LeRobot, TensorFlow, OpenCV, ROS
 \end{onecolentry}
 \vspace{0.08cm}
 
 \begin{onecolentry}
-    \textbf{Tools and Platforms:} Docker, Gazebo, AirSim, Git, GitLab, AWS, GCP, Azure, Apache Kafka
+    \textbf{Tools and Platforms:} Docker, Kubernetes, Gazebo, AirSim, Git, GitLab, AWS, GCP, Azure, Apache Kafka
 \end{onecolentry}
 
 \end{document}
