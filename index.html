@@ -372,10 +372,44 @@
   .more-item a { color: var(--text); }
   .more-item a:hover { color: var(--amber); }
   @media (max-width: 700px) { .more-list { grid-template-columns: 1fr; } }
+
+  /* ---------- motion layer (html.mo = Motion loaded, motion allowed) ---------- */
+  .progress {
+    position: fixed; left: 0; right: 0; top: 0; height: 2px; z-index: 30;
+    background: linear-gradient(90deg, var(--drift), var(--amber) 60%, var(--teal));
+    transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
+  }
+  html:not(.mo) .progress { display: none; }
+  .rail .edge .fill {
+    position: absolute; inset: 0; background: var(--amber);
+    transform-origin: 50% 0; transform: scaleY(0);
+  }
+  .rail .edge.done::after { border-color: var(--amber); background: var(--amber); transition: background .3s, border-color .3s; }
+  .hero h1 .ch { display: inline-block; white-space: pre; will-change: transform; }
+  html.mo .reveal { transition: none; }
+  html.mo .hero .kicker .p, html.mo .hero .role, html.mo .hero .links a,
+  html.mo .hero h1 .ch, html.mo .hud, html.mo .hero-caption { opacity: 0; }
+  html.mo .card, html.mo .award { transition: border-color .2s; }
+  html.mo .card:hover, html.mo .award:hover { transform: none; }
+  /* cursor spotlight on panels */
+  .card, .award, .feature, .stat { --mx: 50%; --my: 50%; position: relative; }
+  .card::after, .award::after, .stat::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(260px circle at var(--mx) var(--my), rgba(255, 180, 84, 0.09), transparent 70%);
+    opacity: 0; transition: opacity .3s;
+  }
+  .card:hover::after, .award:hover::after, .stat:hover::after { opacity: 1; }
+  #ossgraph a { transform-box: fill-box; transform-origin: center; }
+  #ossgraph .msg { fill: var(--amber); pointer-events: none; }
 </style>
+<script src="assets/motion.js"></script>
 </head>
 <body>
-<script>document.documentElement.classList.add("js");</script>
+<script>
+document.documentElement.classList.add("js");
+if (window.Motion && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("mo");
+</script>
+<div class="progress" aria-hidden="true"></div>
 
 <nav class="rail" aria-label="Sections">
   <a class="pose" href="#top"><span class="dot"></span><span class="lbl">x0 hello</span></a>
@@ -1045,7 +1079,10 @@
       if (en.isIntersecting) { en.target.classList.add("vis"); revObs.unobserve(en.target); }
     });
   }, { threshold: 0.12 });
-  document.querySelectorAll(".reveal").forEach(function (e) { revObs.observe(e); });
+  /* with Motion loaded the motion layer below owns the reveals */
+  if (!document.documentElement.classList.contains("mo")) {
+    document.querySelectorAll(".reveal").forEach(function (e) { revObs.observe(e); });
+  }
 
   /* ============ compare slider ============ */
   var cmp = document.getElementById("compare");
@@ -1102,6 +1139,181 @@
       setTimeout(function () { toast.classList.remove("show"); }, 4200);
     }
   }, { passive: true });
+})();
+</script>
+
+<script>
+/* ============ motion layer (motion.dev); skipped when Motion is missing or reduced motion is set ============ */
+(function () {
+  "use strict";
+  if (!document.documentElement.classList.contains("mo")) return;
+  var M = window.Motion, animate = M.animate, scroll = M.scroll, inView = M.inView, stagger = M.stagger;
+  var spring = { type: "spring", stiffness: 140, damping: 18 };
+  var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+
+  /* ---- hero intro: name assembles letter by letter, then the rest settles in ---- */
+  var h1 = document.querySelector(".hero h1");
+  var name = h1.firstChild.textContent;
+  h1.firstChild.remove();
+  var accent = h1.querySelector(".accent");
+  name.split("").forEach(function (c) {
+    var s = document.createElement("span"); s.className = "ch"; s.textContent = c;
+    h1.insertBefore(s, accent);
+  });
+  accent.classList.add("ch");
+  var chars = $$(".hero h1 .ch");
+  animate(chars, { opacity: [0, 1], y: [46, 0], rotateX: [-80, 0], filter: ["blur(8px)", "blur(0px)"] },
+    { delay: stagger(0.045, { startDelay: 0.25 }), type: "spring", stiffness: 160, damping: 14 });
+  animate(accent, { scale: [0, 1.6, 1] }, { delay: 0.25 + chars.length * 0.045 + 0.1, duration: 0.5 });
+  animate(".hero .kicker .p", { opacity: [0, 1], x: [-14, 0] }, { delay: stagger(0.08), duration: 0.45 });
+  animate(".hero .role", { opacity: [0, 1], y: [14, 0] }, { delay: 0.75, duration: 0.7 });
+  animate(".hero .links a", { opacity: [0, 1], y: [12, 0], scale: [0.9, 1] }, { delay: stagger(0.07, { startDelay: 1.0 }), type: "spring", stiffness: 220, damping: 16 });
+  animate(".hud, .hero-caption", { opacity: [0, 1] }, { delay: 1.2, duration: 0.9 });
+
+  /* ---- scroll: progress bar, hero parallax, rail edges fill like a growing trajectory ---- */
+  scroll(animate(".progress", { scaleX: [0, 1] }, { ease: "linear" }));
+  var hero = document.getElementById("top");
+  scroll(animate(".hero-inner", { y: [0, -110], opacity: [1, 0] }, { ease: "linear" }), { target: hero, offset: ["start start", "end start"] });
+  scroll(animate("#slam", { y: [0, 120], scale: [1, 1.06] }, { ease: "linear" }), { target: hero, offset: ["start start", "end start"] });
+
+  var ids = ["top", "work", "projects", "oss", "awards", "education", "beyond", "contact"];
+  var edges = $$(".rail .edge").map(function (e) {
+    var f = document.createElement("i"); f.className = "fill"; e.appendChild(f); return { e: e, f: f };
+  });
+  function railFill() {
+    var probe = window.scrollY + window.innerHeight * 0.45;
+    var atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 60;
+    edges.forEach(function (ed, i) {
+      var a = document.getElementById(ids[i]).offsetTop, b = document.getElementById(ids[i + 1]).offsetTop;
+      var t = atBottom ? 1 : Math.max(0, Math.min(1, (probe - a) / Math.max(b - a, 1)));
+      ed.f.style.transform = "scaleY(" + t + ")";
+      ed.e.classList.toggle("done", t >= 1);
+    });
+  }
+  scroll(railFill);
+  window.addEventListener("resize", railFill);
+
+  /* ---- section headers: node pops, title decodes like a terminal ---- */
+  var glyphs = "01<>/_#x*";
+  $$(".sec-head").forEach(function (sh) {
+    var h2 = sh.querySelector("h2"), final = h2.textContent;
+    inView(sh, function () {
+      animate(sh.querySelector(".node"), { scale: [0, 1.25, 1], rotate: [-90, 0] }, { duration: 0.55 });
+      animate(0, 1, { duration: 0.7, delay: 0.1, onUpdate: function (p) {
+        var k = Math.floor(p * final.length), s = final.slice(0, k);
+        for (var i = k; i < final.length; i++) s += final[i] === " " ? " " : glyphs[(Math.random() * glyphs.length) | 0];
+        h2.textContent = s;
+      }, onComplete: function () { h2.textContent = final; } });
+    }, { amount: 0.6 });
+  });
+
+  /* ---- reveals: spring up out of a blur, staggered across grid rows ---- */
+  $$(".reveal").forEach(function (el) {
+    if (el.classList.contains("sec-head")) { el.style.opacity = 1; el.style.transform = "none"; return; }
+    var sibs = $$(":scope > .reveal", el.parentElement), idx = sibs.indexOf(el);
+    var cols = el.parentElement.classList.contains("stats") ? 4 : (/(^| )(grid|awards)( |$)/.test(el.parentElement.className) ? 2 : 1);
+    inView(el, function () {
+      animate(el, { opacity: [0, 1], y: [34, 0], filter: ["blur(6px)", "blur(0px)"] },
+        { delay: cols > 1 ? (idx % cols) * 0.09 : 0, type: "spring", stiffness: 110, damping: 18 })
+        .then(function () { el.style.filter = ""; el.classList.add("vis"); });
+      if (el.classList.contains("job")) {
+        animate($$("li", el), { opacity: [0, 1], x: [-14, 0] }, { delay: stagger(0.07, { startDelay: 0.15 }), duration: 0.45 });
+      }
+      if (el.classList.contains("ichips") || el.classList.contains("more-list")) {
+        animate($$(":scope > *", el), { opacity: [0, 1], y: [10, 0], scale: [0.92, 1] }, { delay: stagger(0.05, { startDelay: 0.1 }), type: "spring", stiffness: 220, damping: 18 });
+      }
+    }, { amount: 0.15 });
+  });
+
+  /* ---- stats count up ---- */
+  $$(".stat .n").forEach(function (n) {
+    var target = parseFloat(n.textContent), dec = (n.textContent.split(".")[1] || "").length;
+    n.textContent = (0).toFixed(dec);
+    inView(n, function () {
+      animate(0, target, { duration: 1.6, delay: 0.15, ease: [0.16, 1, 0.3, 1], onUpdate: function (v) { n.textContent = v.toFixed(dec); } });
+    });
+  });
+
+  /* ---- compare slider: sweep once to show it is draggable ---- */
+  var cmp = document.getElementById("compare");
+  if (cmp) {
+    var touched = false;
+    cmp.addEventListener("pointerdown", function () { touched = true; });
+    inView(cmp, function () {
+      animate(0, 1, { duration: 2.4, delay: 0.4, ease: "linear", onUpdate: function (t) { if (!touched) cmp.style.setProperty("--x", 50 - 32 * Math.sin(2 * Math.PI * t) + "%"); } });
+    }, { amount: 0.6 });
+  }
+
+  /* ---- oss graph: edges draw out, nodes pop, then merged PRs flow in as messages ---- */
+  var svg = document.getElementById("ossgraph");
+  if (svg && getComputedStyle(svg).display !== "none") {
+    var NS = "http://www.w3.org/2000/svg";
+    var lines = $$("line", svg), facs = $$("rect", svg), nodes = $$("a", svg);
+    lines.forEach(function (l) {
+      var len = Math.hypot(l.x2.baseVal.value - l.x1.baseVal.value, l.y2.baseVal.value - l.y1.baseVal.value);
+      l.style.strokeDasharray = len; l.style.strokeDashoffset = len; l._len = len;
+    });
+    facs.concat(nodes).forEach(function (e) { e.style.opacity = 0; });
+    var timer = null;
+    function message() {
+      var i = (Math.random() * lines.length) | 0, l = lines[i];
+      var x1 = l.x2.baseVal.value, y1 = l.y2.baseVal.value, x2 = l.x1.baseVal.value, y2 = l.y1.baseVal.value;
+      var dot = document.createElementNS(NS, "circle");
+      dot.setAttribute("r", 2.6); dot.setAttribute("class", "msg");
+      svg.insertBefore(dot, facs[0]);
+      animate(0, 1, { duration: 1.1, ease: "easeInOut", onUpdate: function (t) {
+        dot.setAttribute("cx", x1 + (x2 - x1) * t); dot.setAttribute("cy", y1 + (y2 - y1) * t);
+        dot.style.opacity = Math.min(1, 4 * t, 4 * (1 - t));
+      }, onComplete: function () { dot.remove(); } });
+    }
+    var built = false;
+    inView(svg, function () {
+      if (!built) {
+        built = true;
+        lines.forEach(function (l, i) {
+          animate(l._len, 0, { delay: 0.1 + i * 0.05, duration: 0.6, ease: "easeOut", onUpdate: function (v) { l.style.strokeDashoffset = v; } });
+        });
+        facs.forEach(function (f, i) { animate(f, { opacity: [0, 1] }, { delay: 0.45 + i * 0.05, duration: 0.3 }); });
+        nodes.forEach(function (a, i) {
+          a.style.opacity = 1;
+          animate(0, 1, { delay: 0.5 + i * 0.06, type: "spring", stiffness: 260, damping: 13, onUpdate: function (s) { a.style.transform = "scale(" + Math.max(s, 0) + ")"; } });
+        });
+      }
+      timer = setInterval(message, 420);
+      return function () { clearInterval(timer); };
+    }, { amount: 0.3 });
+  }
+
+  /* ---- pointer: 3D tilt + spotlight on panels, magnetic links ---- */
+  if (fine) {
+    $$(".card, .award, .stat").forEach(function (el) {
+      var max = el.classList.contains("stat") ? 6 : 8;
+      el.addEventListener("pointermove", function (e) {
+        var r = el.getBoundingClientRect(), px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+        el.style.setProperty("--mx", px * 100 + "%"); el.style.setProperty("--my", py * 100 + "%");
+        animate(el, { rotateY: (px - 0.5) * max, rotateX: (0.5 - py) * max, y: -3, transformPerspective: 700 }, { type: "spring", stiffness: 260, damping: 22 });
+      });
+      el.addEventListener("pointerleave", function () {
+        animate(el, { rotateY: 0, rotateX: 0, y: 0 }, { type: "spring", stiffness: 200, damping: 18 });
+      });
+    });
+    $$(".hero .links a, footer .f-links a").forEach(function (a) {
+      a.style.display = "inline-block";
+      a.addEventListener("pointermove", function (e) {
+        var r = a.getBoundingClientRect();
+        animate(a, { x: (e.clientX - r.left - r.width / 2) * 0.3, y: (e.clientY - r.top - r.height / 2) * 0.4 }, { type: "spring", stiffness: 300, damping: 15 });
+      });
+      a.addEventListener("pointerleave", function () { animate(a, { x: 0, y: 0 }, { type: "spring", stiffness: 300, damping: 12 }); });
+    });
+  }
+
+  /* ---- rail: active pose pops when it changes ---- */
+  $$(".rail .pose").forEach(function (p) {
+    new MutationObserver(function () {
+      if (p.classList.contains("on")) animate(p.querySelector(".dot"), { scale: [1, 1.7, 1] }, { duration: 0.45 });
+    }).observe(p, { attributes: true, attributeFilter: ["class"] });
+  });
 })();
 </script>
 </body>
